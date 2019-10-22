@@ -274,7 +274,7 @@ router.post("/account/register", (req, res) => {
     Admin.findOne({email})
         .then(hasOne => {
             if(hasOne){
-                return req.status(422).json({status:"422", result:"邮箱被占用"});
+                return res.status(422).json({status:"422", result:"邮箱被占用"});
             }else{
                 const username = req.body.username;
                 const password = req.body.password;
