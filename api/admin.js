@@ -137,10 +137,12 @@ router.post("/music/delete", passport.authenticate("jwt",{session:false}), async
                                 delNoUse.delAll();
                                 AdminLike.findOneAndRemove({s_id:_id})
                                     .then(like => {
-                                        like.save()
+                                        if(like){
+                                            like.save()
                                             .then(() => {
                                                 console.log("同时移除喜欢歌曲");
                                             })
+                                        }
                                     })
                             })
                 })
