@@ -67,7 +67,7 @@ export default {
                 if(valid){
                     wsmLoading.start("正在登录,请稍候...")
                     setTimeout(() => {
-                        if(this.inputCaptcha == this.getCookie("captcha")){
+                        if(this.inputCaptcha.toLowerCase() == this.getCookie("captcha")){
                             this.$axios.post("http://localhost:8633/api/admin/account/login", this.loginForm)
                                 .then(res => {
                                     if(res){
