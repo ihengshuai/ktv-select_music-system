@@ -8,31 +8,26 @@
 */ 
 const UserOrOrders = require("../dbModel/user");
 module.exports = async params => {
-    
-    
-    const flag = await new Promise((resolve) => {
-        if(params){
-            const account = params.account;
-            UserOrOrders.findOne({account})
-                .then(user => {
-                    if(user){
-                        if(new Date().getTime() > new Date(user.endTime).getTime()){
-                            console.log("过期用户");
-                            // 处理
-                            return resolve(false);
-                        }else{
-                            console.log("合法用户");
-                            return resolve(true);
-                        }
-                    }else{
-                        return resolve(false);
-                    }
-                })
+    let flag = false;
+    try {
+        const account = params.account;
+        const user = await UserOrOrders.findOne({account})
+        if(user){
+            if(new Date().getTime() > new Date(user.endTime).getTime()){
+                console.log("过期用户");
+                // 处理
+                return flag;
+            }else{
+                console.log("合法用户");
+                return !flag;
+            }
         }else{
             console.log("不合法用户");
-            return resolve(false);
+            return flag;
         }
-        
-    }) 
-    return flag;
+    } catch (error) {
+        console.error(error)
+        return flag;
+    }
+    
 }
