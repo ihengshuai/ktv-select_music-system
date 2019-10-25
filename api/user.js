@@ -39,42 +39,45 @@ router.post("/add", (req, res) => {
 // 用户登录
 router.post("/login", async(req, res) => {
     const account = req.body.account;
-    const flag = await isBadAccount(req.body)
-    UserOrOrders.findOne({account})
-            .then(user => {
-                if(!user){
-                    return res.status(406).json({status:"406", result:"账号或密码错误"})
+    try {
+        const flag = await isBadAccount(req.body)
+        const user = await UserOrOrders.findOne({account});
+        if(!user){
+            return res.status(406).json({status:"406", result:"账号或密码错误"})
+        }else{
+            if(flag){
+                const password = req.body.password;
+                const isValidPassword = bcrypt.compareSync(password, user.password);
+                if(!isValidPassword){
+                    return res.status(406).json({status:"406",result:"账号或密码错误"})
                 }else{
-                    if(flag){
-                        const password = req.body.password;
-                        const isValidPassword = bcrypt.compareSync(password, user.password);
-                        if(!isValidPassword){
-                            return res.status(406).json({status:"406",result:"账号或密码错误"})
+                    // 设置token
+                    const rule = {
+                        id:String(user._id),
+                        account:user.account,
+                        startTime:user.startTime,
+                        endTime:user.endTime,
+                        order_id:user.order_id,
+                        money:user.money
+                    };  
+                    // 签证
+                    jwt.sign(rule, jwt_key, (err, token) => {
+                        if(err){
+                            console.log(err);
+                            return res.status(500).json({status:"500",result:"未知错误"});
                         }else{
-                            // 设置token
-                            const rule = {
-                                id:String(user._id),
-                                account:user.account,
-                                startTime:user.startTime,
-                                endTime:user.endTime,
-                                order_id:user.order_id,
-                                money:user.money
-                            };  
-                            // 签证
-                            jwt.sign(rule, jwt_key, (err, token) => {
-                                if(err){
-                                    console.log(err);
-                                    return res.status(500).json({status:"500",result:"未知错误"});
-                                }else{
-                                    res.status(200).json({status:"200", result:"登录成功", token:"Bearer " + token})
-                                }
-                            })
+                            res.status(200).json({status:"200", result:"登录成功", token:"Bearer " + token})
                         }
-                    }else{
-                        res.status(401).json({status:"401", result:"帐号过期,请联系管理员"})
-                    }
+                    })
                 }
-            })
+            }else{
+                res.status(401).json({status:"401", result:"帐号过期,请联系管理员"})
+            }
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({status:"500", result:"服务器内部错误"})
+    }
 })
 
 
