@@ -13,6 +13,7 @@ function isExit(songInfo){
     const songList = store.getters.songList;
     if(songList.length == 0){
         localStorage.setItem("currentSong", JSON.stringify(songInfo));
+        localStorage.setItem("play", 1);
         store.dispatch("setCurrentSong", songInfo)
     }
     let isexit = false;
