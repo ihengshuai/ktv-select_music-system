@@ -85,7 +85,7 @@
             </div>
         </Modal>
 
-        <audio autoplay ref="musicPlayer" @ended="end" :src="'http://localhost:8633/api/music/nowmusic?id=' + currentSong._id" preload="auto"></audio>
+        <audio autoplay id="musicPlayer" ref="musicPlayer" @ended="end" :src="'http://localhost:8633/api/music/nowmusic?id=' + currentSong._id" preload="auto"></audio>
     </div>
 </template>
 <script>
@@ -434,6 +434,20 @@ export default {
                         $("#ios-play").fadeIn();
                         $("#ios-pause").fadeOut();
                     }else{
+                        $("#ios-play").fadeOut();
+                        $("#ios-pause").fadeIn();
+                    }
+                }else{
+                    if(localStorage.play == "0"){
+                        setTimeout(() => {
+                            document.getElementById("musicPlayer").pause();
+                        }, 10)
+                        $("#ios-play").fadeIn();
+                        $("#ios-pause").fadeOut();
+                    }else{
+                        setTimeout(() => {
+                            document.getElementById("musicPlayer").play();
+                        }, 10)
                         $("#ios-play").fadeOut();
                         $("#ios-pause").fadeIn();
                     }
