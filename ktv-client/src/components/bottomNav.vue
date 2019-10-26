@@ -116,12 +116,15 @@ export default {
     mounted(){
         setTimeout(() => {
             this.currentSong = JSON.parse(localStorage.currentSong)[0] ? JSON.parse(localStorage.currentSong)[0] : {_id:0};
-            if(this.$refs.musicPlayer.paused){
+            if(localStorage.play == "0"){
+                this.$refs.musicPlayer.pause();
                 $("#ios-play").fadeIn();
                 $("#ios-pause").fadeOut();
+                
             }else{
                 $("#ios-play").fadeOut();
                 $("#ios-pause").fadeIn();
+                this.$refs.musicPlayer.play();
             }
         }, 200)
     },
@@ -143,19 +146,46 @@ export default {
         // 播放上一首
         playPrev(){
             if(hasLogin()){
-                if(this.$refs.musicPlayer.src.split("?")[1] == "id=0"){
-                    this.$confirm("请先添加歌曲", "提示", {
-                        confirmButtonText:"确定",
-                        cancelButtonText:"取消",
-                        type:"warning"
-                    }).then(() => {}).catch(() => {})
-                    
+                if(localStorage.play == "0"){
+                    if(this.$refs.musicPlayer.src.split("?")[1] == "id=0"){
+                        this.$confirm("请先添加歌曲", "提示", {
+                            confirmButtonText:"确定",
+                            cancelButtonText:"取消",
+                            type:"warning"
+                        }).then(() => {}).catch(() => {})
+                        
+                    }else{
+                        const song = prevSong();
+                        this.$refs.musicPlayer.src = "http://localhost:8633/api/music/nowmusic?id=" + song._id
+                        const obj = [song];
+                        localStorage.setItem("currentSong", JSON.stringify(obj))
+                        this.currentSong = song;
+                        setTimeout(() => {
+                            $("#ios-play").fadeIn();
+                            $("#ios-pause").fadeOut();
+                            this.$refs.musicPlayer.pause();
+                        }, 10)
+                    }
                 }else{
-                    const song = prevSong();
-                    this.$refs.musicPlayer.src = "http://localhost:8633/api/music/nowmusic?id=" + song._id
-                    const obj = [song];
-                    localStorage.setItem("currentSong", JSON.stringify(obj))
-                    this.currentSong = song;
+                    if(this.$refs.musicPlayer.src.split("?")[1] == "id=0"){
+                        this.$confirm("请先添加歌曲", "提示", {
+                            confirmButtonText:"确定",
+                            cancelButtonText:"取消",
+                            type:"warning"
+                        }).then(() => {}).catch(() => {})
+                        
+                    }else{
+                        const song = prevSong();
+                        this.$refs.musicPlayer.src = "http://localhost:8633/api/music/nowmusic?id=" + song._id
+                        const obj = [song];
+                        localStorage.setItem("currentSong", JSON.stringify(obj))
+                        this.currentSong = song;
+                        setTimeout(() => {
+                            $("#ios-play").fadeOut();
+                            $("#ios-pause").fadeIn();
+                            this.$refs.musicPlayer.play();
+                        }, 10)
+                    }
                 }
             }else{
                 this.loginModal = true;
@@ -177,15 +207,28 @@ export default {
                     const obj = [song];
                     localStorage.setItem("currentSong", JSON.stringify(obj))
                     this.currentSong = song;
+                    if(localStorage.play == "0"){
+                        this.$refs.musicPlayer.play();
+                        $("#ios-play").fadeOut();
+                        $("#ios-pause").fadeIn();
+                        localStorage.play = 1;
+                    }else{
+                        this.$refs.musicPlayer.pause();
+                        $("#ios-play").fadeIn();
+                        $("#ios-pause").fadeOut();
+                        localStorage.play = 0;
+                    }
                 }else{
                     if(this.$refs.musicPlayer.paused){
                         this.$refs.musicPlayer.play();
                         $("#ios-play").fadeOut();
                         $("#ios-pause").fadeIn();
+                        localStorage.play = 1;
                     }else{
                         this.$refs.musicPlayer.pause();
                         $("#ios-play").fadeIn();
                         $("#ios-pause").fadeOut();
+                        localStorage.play = 0;
                     }
                 }
             }else{
@@ -195,19 +238,49 @@ export default {
         // 播放下一首
         playNext(){
             if(hasLogin()){
-                if(this.$refs.musicPlayer.src.split("?")[1] == "id=0"){
-                    this.$confirm("请先添加歌曲", "提示", {
-                        confirmButtonText:"确定",
-                        cancelButtonText:"取消",
-                        type:"warning"
-                    }).then(() => {}).catch(() => {})
-                    
+                if(localStorage.play == '0'){
+                    console.log(11)
+                    if(this.$refs.musicPlayer.src.split("?")[1] == "id=0"){
+                        this.$confirm("请先添加歌曲", "提示", {
+                            confirmButtonText:"确定",
+                            cancelButtonText:"取消",
+                            type:"warning"
+                        }).then(() => {}).catch(() => {})
+                        
+                    }else{
+                        const song = nextSong();
+                        this.$refs.musicPlayer.src = "http://localhost:8633/api/music/nowmusic?id=" + song._id
+                        const obj = [song];
+                        localStorage.setItem("currentSong", JSON.stringify(obj))
+                        this.currentSong = song;
+                        
+                        setTimeout(() => {
+                            $("#ios-play").fadeIn();
+                            $("#ios-pause").fadeOut();
+                            this.$refs.musicPlayer.pause();
+                        }, 10)
+                    }
                 }else{
-                    const song = nextSong();
-                    this.$refs.musicPlayer.src = "http://localhost:8633/api/music/nowmusic?id=" + song._id
-                    const obj = [song];
-                    localStorage.setItem("currentSong", JSON.stringify(obj))
-                    this.currentSong = song;
+                    if(this.$refs.musicPlayer.src.split("?")[1] == "id=0"){
+                        this.$confirm("请先添加歌曲", "提示", {
+                            confirmButtonText:"确定",
+                            cancelButtonText:"取消",
+                            type:"warning"
+                        }).then(() => {}).catch(() => {})
+                        
+                    }else{
+                        const song = nextSong();
+                        this.$refs.musicPlayer.src = "http://localhost:8633/api/music/nowmusic?id=" + song._id
+                        const obj = [song];
+                        localStorage.setItem("currentSong", JSON.stringify(obj))
+                        this.currentSong = song;
+                        
+                        setTimeout(() => {
+                            $("#ios-play").fadeOut();
+                            $("#ios-pause").fadeIn();
+                            this.$refs.musicPlayer.play();
+                        }, 10)
+                    }
                 }
             }else{
                 this.loginModal = true;
@@ -354,13 +427,24 @@ export default {
         },
         currentSong:{
             get(){
+                if(this.$store.getters.songList.length == 1){
+                    console.log("一首歌")
+                    
+                    if(localStorage.play == "0"){
+                        $("#ios-play").fadeIn();
+                        $("#ios-pause").fadeOut();
+                    }else{
+                        $("#ios-play").fadeOut();
+                        $("#ios-pause").fadeIn();
+                    }
+                }
                 this.nextSong = nextSong();
                 return this.$store.getters.currentSong;
             },
             set(val){
                 this.$store.dispatch("setCurrentSong", val);
             }
-        },
+        }
     }
 }
 </script>
