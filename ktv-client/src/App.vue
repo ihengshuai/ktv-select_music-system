@@ -39,6 +39,9 @@ export default {
             if(!localStorage.currentSong){
                 localStorage.setItem("currentSong", JSON.stringify([]));
             }
+            if(!localStorage.play){
+                localStorage.setItem("play", 0);
+            }
             console.log("已登录")
         }
         setInterval(() => {
