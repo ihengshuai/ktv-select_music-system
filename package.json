@@ -1,0 +1,26 @@
+{
+  "name": "ktv-select_music-system",
+  "version": "1.0.0",
+  "description": "This is a ktv-select_music-system for Node",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "nodemon index"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^3.0.6",
+    "express": "^4.17.1",
+    "formidable": "^1.2.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.7.4",
+    "passport": "^0.4.0",
+    "passport-jwt": "^4.0.0",
+    "silly-datetime": "^0.1.2",
+    "svg-captcha": "^1.4.0"
+  },
+  "devDependencies": {
+    "body-parser": "^1.19.0"
+  }
+}
