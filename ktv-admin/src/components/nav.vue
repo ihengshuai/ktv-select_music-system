@@ -1,13 +1,14 @@
 <template>
     <div class="wsmnav">
-        <Row>
-            <Menu mode="horizontal" :theme="theme">
-                <Col :span="7">
+        
+        <Menu mode="horizontal" :theme="theme">
+            <Row>
+                <i-col :span="7">
                     <div class="nav-logo">后台管理系统</div>
-                </Col>
-                <Col :span="13">
+                </i-col>
+                <i-col :span="13">
                     <div class="current-time">{{nowTime}}</div>
-                </Col>
+                </i-col>
                 <MenuItem class="opera-btn" name="1">
                     <Dropdown trigger="click">
                         <a href="javascript:void(0)">
@@ -24,8 +25,9 @@
                         </DropdownMenu>
                     </Dropdown>
                 </MenuItem>
-            </Menu>
-        </Row>
+            </Row>
+        </Menu>
+        
     </div>
 </template>
 <script>
