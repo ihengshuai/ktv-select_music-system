@@ -1,0 +1,13 @@
+{
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.expand": false,
+  "explorer.fileNesting.patterns": {
+    "*.ts": "$(capture).test.ts, $(capture).test.tsx",
+    "*.tsx": "$(capture).test.ts, $(capture).test.tsx",
+    "*.env": "$(capture).env.*",
+    "Dockerfile": ".dockerfileignore",
+    "package.json": "CHANGELOG*,yarn.lock,LICENSE,.gitattributes,.gitignore,.gitlab-ci.yml,.npmrc,.browserslistrc,.cz-config.js",
+    ".eslintrc.js": ".eslintignore,.prettierignore,.stylelintignore,.commitlintrc.js,prettier.config.js,.stylelintrc.js,.editorconfig"
+  },
+}

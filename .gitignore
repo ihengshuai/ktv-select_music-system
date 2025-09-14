@@ -1,0 +1,34 @@
+.DS_Store
+node_modules
+/dist
+coverage
+cypress-demo
+
+yarn.lock
+package-lock.json
+pnpm-lock.yaml
+
+
+.env
+.env.production
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor directories and files
+.idea
+.vscode/**
+!.vscode/settings.json
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.npmrc
+.db/**
+!.db/README.md
+
+/logs

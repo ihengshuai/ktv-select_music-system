@@ -1,0 +1,99 @@
+.custom {
+  &-loading {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    color: var(--color-text);
+    pointer-events: none;
+    background: ~"rgba(255, 255, 255, .1)";
+
+    @colors: rgba(224, 20, 99, 0.75), rgba(61, 184, 143, 0.75), rgba(112, 201, 219, 0.75), rgba(232, 169, 33, 0.75);
+    @size: 2.5em;
+    @thickness: 0.5em;
+
+    // Calculated variables.
+    @lat: (@size - @thickness) / 2;
+    @offset: @lat - @thickness;
+
+    .notice {
+      margin-top: 80px;
+      font-size: 12px;
+      opacity: 0.8;
+    }
+
+    .loader {
+      position: absolute;
+      top: calc(50% - (@size / 2));
+      left: calc(50% - (@size / 2));
+      width: @size;
+      height: @size;
+      transform: rotate(165deg);
+
+      &::before,
+      &::after {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        display: block;
+        width: @thickness;
+        height: @thickness;
+        content: "";
+        border-radius: @thickness / 2;
+        transform: translate(-50%, -50%);
+      }
+
+      &::before {
+        animation: before 2s infinite;
+      }
+
+      &::after {
+        animation: after 2s infinite;
+      }
+    }
+
+    @keyframes before {
+      0% {
+        width: @thickness;
+        box-shadow: @lat (-@offset) extract(@colors, 1), (-@lat) @offset extract(@colors, 3);
+      }
+
+      35% {
+        width: @size;
+        box-shadow: 0 (-@offset) extract(@colors, 1), 0 @offset extract(@colors, 3);
+      }
+
+      70% {
+        width: @thickness;
+        box-shadow: (-@lat) (-@offset) extract(@colors, 1), @lat @offset extract(@colors, 3);
+      }
+
+      100% {
+        box-shadow: @lat (-@offset) extract(@colors, 1), (-@lat) @offset extract(@colors, 3);
+      }
+    }
+
+    @keyframes after {
+      0% {
+        height: @thickness;
+        box-shadow: @offset @lat extract(@colors, 2), (-@offset) (-@lat) extract(@colors, 4);
+      }
+
+      35% {
+        height: @size;
+        box-shadow: @offset 0 extract(@colors, 2), (-@offset) 0 extract(@colors, 4);
+      }
+
+      70% {
+        height: @thickness;
+        box-shadow: @offset (-@lat) extract(@colors, 2), (-@offset) @lat extract(@colors, 4);
+      }
+
+      100% {
+        box-shadow: @offset @lat extract(@colors, 2), (-@offset) (-@lat) extract(@colors, 4);
+      }
+    }
+  }
+}

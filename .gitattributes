@@ -1,0 +1,5 @@
+*.js linguist-language=tsx
+*.tsx linguist-language=tsx
+*.html linguist-language=tsx
+*.vue linguist-language=tsx
+*.ts linguist-language=tsx

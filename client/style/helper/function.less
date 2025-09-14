@@ -1,0 +1,10 @@
+/*
+ * 属性循环定义
+ */
+.fieldLoop(@i, @radix, @field, @short) when (@i < 21) {
+  @value: @i * @radix;
+  .@{short}-@{value} {
+    @{field}: unit(@value, px) !important;
+  }
+  .fieldLoop(@i + 1, @radix, @field, @short);
+}

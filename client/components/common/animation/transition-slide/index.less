@@ -1,0 +1,44 @@
+@prefix: tansition-slide;
+
+.leave-mixin(@offset, @dir) {
+  @offsetRevserse: -@offset;
+
+  &-leave-active {
+    opacity: 1;
+    transition: all 200ms ease-out;
+  }
+
+  &-leave-to {
+    opacity: 0;
+    transform: ~"@{dir}(@{offsetRevserse}%)";
+  }
+
+  &-enter-active {
+    opacity: 1;
+    transition: all 250ms ease-in;
+    transform: ~"@{dir}(0)";
+  }
+
+  &-enter-from {
+    opacity: 0;
+    transform: ~"@{dir}(@{offset}%)";
+  }
+}
+
+.@{prefix} {
+  &-top {
+    .leave-mixin(50, translateY);
+  }
+
+  &-bottom {
+    .leave-mixin(-50, translateY);
+  }
+
+  &-left {
+    .leave-mixin(50, translateX);
+  }
+
+  &-right {
+    .leave-mixin(-50, translateX);
+  }
+}

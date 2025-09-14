@@ -1,0 +1,75 @@
+@import url("@/style/helper/variable.less");
+
+.@{prefix}__auth-layout {
+  display: grid;
+  grid-template-rows: 1fr auto 1fr;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 0 40px;
+  background: #0568c1;
+
+  &__title {
+    margin-top: 50px;
+    font-size: 40px;
+    font-weight: 700;
+    color: #fff;
+    text-align: center;
+  }
+
+  &__content {
+    display: flex;
+    max-width: 890px;
+    margin: 40px auto;
+  }
+
+  &__form {
+    box-sizing: border-box;
+    flex: 1;
+    padding: 40px;
+    background: #fff;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+    box-shadow: 2px 9px 49px -17px rgb(0 0 0 / 10%);
+
+    h2 {
+      margin-bottom: 5px;
+      font-size: 30px;
+      font-weight: 900;
+      line-height: 40px;
+      color: #272346;
+      text-align: center;
+    }
+
+    .ant-form {
+      margin: 30px 0;
+    }
+  }
+
+  &__bg {
+    display: grid;
+    flex: 1;
+    align-items: center;
+    padding: 40px;
+    background: #f4f9fd;
+    background-size: cover;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+
+    img {
+      max-width: 100%;
+    }
+  }
+
+  &__footer {
+    text-align: center;
+  }
+
+  .@{prefix}__layout-footer {
+    color: #c0c0c0;
+  }
+
+  .ant-input-group-addon {
+    padding: 0;
+  }
+}

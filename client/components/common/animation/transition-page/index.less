@@ -1,0 +1,24 @@
+@prefix: transition-page;
+
+.@{prefix} {
+  &-leave-active {
+    opacity: 1;
+    transition: all 300ms ease-in-out;
+  }
+
+  &-leave-to {
+    opacity: 0;
+    transform: translateX(10%);
+  }
+
+  &-enter-active {
+    opacity: 1;
+    transition: all 120ms ease-in-out;
+    // transform: translateX(0);
+  }
+
+  &-enter-from {
+    opacity: 0;
+    // transform: translateX(-5%);
+  }
+}

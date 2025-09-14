@@ -1,0 +1,17 @@
+{
+  "$schema": "https://swc.rs/schema.json",
+  // "jsc": {
+  //   "parser": {
+  //     "syntax": "ecmascript",
+  //     "decorators": false
+  //   }
+  // },
+  "module": {
+    "type": "commonjs",
+    // These are defaults.
+    "strict": false,
+    "strictMode": true,
+    "lazy": false,
+    "noInterop": false
+  }
+}

@@ -1,0 +1,25 @@
+# 提供系统数据库相关容器
+
+version: '3.3'
+
+name: ktv-system-v2
+
+services:
+  mysql:
+    image: mysql:latest
+    container_name: ktv-system-v2_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456 # 默认root密码
+      TZ: Asia/Shanghai
+    ports:
+      - 3328:3306 # 自定义端口映射
+    restart: "no"
+    volumes:
+      - ./.db/mysql:/var/lib/mysql
+    networks:
+      - ktv-system-v2_network
+
+  # 根据Dockerfile创建容器
+
+networks:
+  ktv-system-v2_network:

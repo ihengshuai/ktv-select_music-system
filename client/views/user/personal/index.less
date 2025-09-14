@@ -1,0 +1,40 @@
+.avatar-uploader > .ant-upload {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  overflow: hidden;
+  border-radius: 50%;
+}
+
+.avatar-uploader .avatar-uploader-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ant-upload-select-picture-card i {
+  font-size: 32px;
+  color: #999;
+}
+
+.ant-upload-select-picture-card .ant-upload-text {
+  margin-top: 8px;
+  color: #666;
+  text-align: center;
+}
+
+.upload-btn {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  line-height: 60px;
+  text-align: center;
+  background: ~"rgba(0 0 0 / 40%)";
+  transition: background 200ms linear;
+
+  &:hover {
+    background: ~"rgba(0 0 0 / 10%)";
+  }
+}

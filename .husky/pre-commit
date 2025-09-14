@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+pnpm lint
+echo Lint Sucessful 🎉
+
+# 若lint fix后将已经暂存的文件继续暂存以commit
+git add $(git diff --name-only --cached --diff-filter=M)
