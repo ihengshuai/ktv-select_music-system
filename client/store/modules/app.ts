@@ -18,7 +18,7 @@ export const useAppStore = defineStore("app", () => {
   const breadcrumbs = ref<IBreadcrumb[]>([]);
   const showNavigateTag = ref(!getLocalStorage(STORAGE_KEYS.NAVIGATE_TAGS_VISIBLE_) ? true : false);
   const navigateMap = ref<Map<ROUTE_NAME, INavigateMenu>>(
-    new Map([[ROUTE_NAME.welcome, { title: "menu.welcome", closeable: false, to: { name: ROUTE_NAME.welcome } }]])
+    new Map([[ROUTE_NAME.adminHome, { title: "menu.home", closeable: false, to: { name: ROUTE_NAME.adminHome } }]])
   );
   const navigateTags = computed(() => [...navigateMap.value.values()]);
   const config = useConfig();
@@ -63,7 +63,7 @@ export const useAppStore = defineStore("app", () => {
   }
 
   function appendNavigateTags(navigate: INavigateMenu) {
-    if (navigate.to.name === ROUTE_NAME.welcome) return;
+    if (navigate.to.name === ROUTE_NAME.adminHome) return;
     if (navigateMap.value.has(navigate.to.name)) {
       navigateMap.value.set(navigate.to.name, navigate);
       return;
@@ -81,7 +81,7 @@ export const useAppStore = defineStore("app", () => {
     }
     if (type === CLOSE_OTHER) {
       navigateTags.value.forEach(item => {
-        if (item.to.name !== route.name && item.to.name !== ROUTE_NAME.welcome) {
+        if (item.to.name !== route.name && item.to.name !== ROUTE_NAME.adminHome) {
           navigateMap.value.delete(item.to.name);
         }
       });
@@ -89,17 +89,17 @@ export const useAppStore = defineStore("app", () => {
     }
     if (type === CLOSE_ALL) {
       navigateTags.value.forEach(item => {
-        if (item.to.name !== ROUTE_NAME.welcome) {
+        if (item.to.name !== ROUTE_NAME.adminHome) {
           navigateMap.value.delete(item.to.name);
         }
       });
-      return router.push({ name: ROUTE_NAME.welcome });
+      return router.push({ name: ROUTE_NAME.adminHome });
     }
     if (type === CLOSE_LEFT) {
       const needRemoveTags: ROUTE_NAME[] = [];
       for (let i = 0; i < navigateTags.value.length; i++) {
         const item = navigateTags.value[i];
-        if (item.to.name !== ROUTE_NAME.welcome && item.to.name !== route.name) {
+        if (item.to.name !== ROUTE_NAME.adminHome && item.to.name !== route.name) {
           needRemoveTags.push(item.to.name);
         }
         if (item.to.name === route.name) {
@@ -112,7 +112,7 @@ export const useAppStore = defineStore("app", () => {
       const needRemoveTags: ROUTE_NAME[] = [];
       for (let i = navigateTags.value.length - 1; i >= 0; i--) {
         const item = navigateTags.value[i];
-        if (item.to.name !== ROUTE_NAME.welcome && item.to.name !== route.name) {
+        if (item.to.name !== ROUTE_NAME.adminHome && item.to.name !== route.name) {
           needRemoveTags.push(item.to.name);
         }
         if (item.to.name === route.name) {

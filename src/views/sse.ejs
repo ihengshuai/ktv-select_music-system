@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%=title %></title>
+</head>
+<body>
+
+  <ul class="msg-list"></ul>
+
+  <input type="text" id="input">
+  <button id="submit">发送</button>
+
+  <script>
+    const msgList = document.querySelector(".msg-list");
+    const submitBtn = document.querySelector("#submit");
+    const inputElem = document.querySelector("#input");
+    let isSending = false;
+    const API_PREFIX = '<%=API_PREFIX %>' || '/api';
+
+    submitBtn.addEventListener("click", () => {
+      const msg = inputElem.value;
+      if (!msg || isSending) return;
+      isSending = true;
+      sendSseMsg(msg)
+      inputElem.value = "";
+    })
+
+    function sendSseMsg(msg) {
+      const sseEvent = new EventSource(`${API_PREFIX}/sse?msg=${msg}`, {
+        withCredentials: true
+      });
+
+      sseEvent.addEventListener("open", e => {
+        // console.log("sse opened", e)
+      })
+
+      sseEvent.addEventListener("error", e => {
+        console.log('出错了...')
+        sseEvent.close();
+        isSending = false;
+      })
+
+      sseEvent.addEventListener("message", (e) => {
+        const data = e;
+        const dom = createMsgItem(data)
+        msgList.appendChild(dom);
+      })
+
+      sseEvent.addEventListener("done", (e) => {
+        const data = e;
+        sseEvent.close();
+        isSending = false;
+
+        const dom = createMsgItem(data)
+        msgList.appendChild(dom);
+      })
+    }
+
+    function createMsgItem(msg) {
+      const li = document.createElement("li");
+      li.classList.add("msg-item");
+      li.setAttribute('date-id', msg.lastEventId);
+      li.textContent = msg.data;
+
+      return li;
+    }
+  </script>
+</body>
+</html>

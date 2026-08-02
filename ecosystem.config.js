@@ -3,7 +3,7 @@
 module.exports = {
   apps: [
     {
-      name: "ktv-system-v2",
+      name: "ktv-system",
       script: "dist/server/main.js",
       watch: false,
       instance: 2,

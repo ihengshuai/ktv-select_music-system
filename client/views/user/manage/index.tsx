@@ -1,19 +1,21 @@
-import { Button, Form, FormItem, InputPassword, message, Modal, Select, Tag } from "ant-design-vue";
-import { ColumnsType } from "ant-design-vue/es/table";
+import { Form, FormItem, InputPassword, message, Modal, Select } from "ant-design-vue";
 // @ts-ignore
 import md5 from "md5";
-import { defineComponent, reactive, ref, watchEffect } from "vue";
+import { defineComponent, reactive, watchEffect } from "vue";
 
 import { UserController } from "@/api/user";
 import IPanel from "@/components/common/panel";
 import ITable from "@/components/common/table";
 import { TABLE_OPERATION } from "@/constants/common";
 import { USER_ROLE, USER_STATUS } from "@/constants/user";
-import { getEnumEntity, getEnumOptions } from "@/helper";
+import { getEnumOptions } from "@/helper";
 import { useTablePage } from "@/hooks";
 import { useUserStore } from "@/store";
-import { IOperation } from "@/typings/common/table";
+import { IListQuery, IOperation } from "@/typings/common/table";
 import { IUserInfo, IUserListFilter } from "@/typings/models/user";
+
+import { createUserManageColumns, createUserTableFilters } from "./helper";
+import UserTableSearch from "./widgets/user-table-search";
 
 /** 默认密码 */
 const DEFAULT_PASSWORD = "123456";
@@ -47,39 +49,10 @@ const UserManagePage = defineComponent({
       user: null,
     });
 
-    const columns = ref<ColumnsType<IUserInfo>>([
-      {
-        title: "ID",
-        dataIndex: "id",
-        key: "id",
-      },
-      {
-        title: "账号",
-        dataIndex: "username",
-        key: "username",
-      },
-      {
-        title: "昵称",
-        dataIndex: "nickname",
-        key: "nickname",
-      },
-      {
-        title: "角色",
-        dataIndex: "level",
-        key: "level",
-        customRender: ({ text }) => getEnumEntity(USER_ROLE, text).alias,
-      },
-      {
-        title: "状态",
-        dataIndex: "status",
-        key: "status",
-        customRender: ({ text }) => (
-          <Tag color={text === USER_STATUS.ACTIVE ? "success" : "gray"}>{getEnumEntity(USER_STATUS, text).alias}</Tag>
-        ),
-      },
-    ]);
+    const filters = reactive(createUserTableFilters());
+    const columns = createUserManageColumns();
 
-    const operations: IOperation<IUserInfo>[] = [
+    const operations: Array<IOperation<IUserInfo>> = [
       {
         key: TABLE_OPERATION.TOGGLE_STATUS,
         disabled: ({ record }) => record.level === USER_ROLE.SUPER || userStore.userState.user?.level! >= record.level,
@@ -111,14 +84,15 @@ const UserManagePage = defineComponent({
       },
     ];
 
-    // @ts-ignore
-    const { tableProps, refresh } = useTablePage<IUserInfo, IUserListFilter>({
-      columns: columns.value,
+    const { tableProps, onSearch, resetSearch, refresh } = useTablePage<IUserInfo, IUserListFilter>({
+      filters,
+      columns,
+      traceMode: "replace",
       fetchData: getUsers,
     });
 
-    async function getUsers() {
-      const res = await userController.fetchUsers();
+    async function getUsers(params: IListQuery<IUserListFilter>) {
+      const res = await userController.fetchUsers(params);
       return res;
     }
 
@@ -211,12 +185,13 @@ const UserManagePage = defineComponent({
     return () => (
       <IPanel
         title={
-          <Button
-            type="primary"
-            onClick={() => userController.testCaptureError()}
-          >
-            演示错误
-          </Button>
+          <>
+            <UserTableSearch
+              filters={filters}
+              onSearch={onSearch}
+              onReset={resetSearch}
+            />
+          </>
         }
       >
         <ITable

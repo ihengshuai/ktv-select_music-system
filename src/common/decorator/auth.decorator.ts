@@ -1,12 +1,12 @@
 import { SetMetadata } from "@nestjs/common";
 
-import { DecoratorSymbol, USER_ROLE } from "@/constants";
+import { DECORATOR_SYMBOL, USER_ROLE } from "@/consts";
 
 /** 表示该路由需要认证 */
-export const RegisterAuthenticationController = () => SetMetadata(DecoratorSymbol.AUTHENTICATION_CONTROLLER, true);
+export const RegisterAuthenticationController = () => SetMetadata(DECORATOR_SYMBOL.AUTHENTICATION_CONTROLLER, true);
 
 /** 用户角色 */
-export const Role = (...roles: USER_ROLE[]) => SetMetadata(DecoratorSymbol.USER_ROLE_LABEL, roles);
+export const Role = (...roles: USER_ROLE[]) => SetMetadata(DECORATOR_SYMBOL.USER_ROLE_LABEL, roles);
 
 /** 公共访问 */
-export const IsPublic = () => SetMetadata(DecoratorSymbol.IS_PUBLIC, true);
+export const IsPublic = () => SetMetadata(DECORATOR_SYMBOL.IS_PUBLIC, true);

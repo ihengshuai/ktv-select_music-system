@@ -7,14 +7,14 @@ import { ROUTE_NAME } from "@/constants/route";
 import { i18n } from "@/helper";
 import { LazyComponent } from "@/layout/page/lazy-component";
 
-const welcome = () => import("@/views/dashboard/welcome");
-const analysis = () => import("@/views/dashboard/analysis");
+const dashboardMusic = () => import("@/views/dashboard/dashboard-music");
+const dashboardIncome = () => import("@/views/dashboard/dashboard-income");
 
 export const dashboardRoute: RouteRecordRaw[] = [
   {
-    path: "admin/dashboard",
+    path: "dashboard",
     name: ROUTE_NAME.dashboard,
-    redirect: { name: ROUTE_NAME.welcome },
+    redirect: { name: ROUTE_NAME.dashboardMusic },
     meta: {
       pageTitle: "menu.dashboard",
       permission: PERMISSION.DASHBOARD,
@@ -22,23 +22,22 @@ export const dashboardRoute: RouteRecordRaw[] = [
     component: RouterView,
     children: [
       {
-        path: "welcome",
-        name: ROUTE_NAME.welcome,
-        component: LazyComponent(welcome),
+        path: "music",
+        name: ROUTE_NAME.dashboardMusic,
+        component: LazyComponent(dashboardMusic),
         meta: {
-          pageTitle: "menu.welcome",
+          pageTitle: "menu.dashboard-music",
         },
       },
       {
-        path: "analysis",
-        name: ROUTE_NAME.analysis,
+        path: "income",
+        name: ROUTE_NAME.dashboardIncome,
         component: LazyComponent({
-          loader: analysis,
+          loader: dashboardIncome,
           loadingComponent: () => h(CustomLoading, () => i18n.global.t("common.customLoading")),
-          delay: 2000,
         }),
         meta: {
-          pageTitle: "menu.analysis",
+          pageTitle: "menu.dashboard-income",
         },
       },
     ],

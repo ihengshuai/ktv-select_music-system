@@ -76,8 +76,6 @@ export enum USER_ROLE {
   SUPER,
   /** 管理员 */
   ADMIN,
-  /** 开发者 */
-  DEVELOPER,
   /** 普通用户 */
   USER,
 }
@@ -88,9 +86,6 @@ setMetadata(USER_ROLE, {
   },
   ADMIN: {
     alias: "管理员",
-  },
-  DEVELOPER: {
-    alias: "开发者",
   },
   USER: {
     alias: "普通用户",

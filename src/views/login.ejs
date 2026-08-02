@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%=title %></title>
+  <script src="/js/spark-md5.min.js"></script>
+</head>
+<body>
+  <script>
+    const ctxData = JSON.parse(JSON.stringify(<%- data %>))
+  </script>
+
+  <% if (isLogin === true) {%>
+    <h1>你已登录</h1>
+    <p id="userInfo"></p>
+
+    <script>
+      const userInfo = document.getElementById('userInfo')
+      userInfo.innerHTML = JSON.stringify(ctxData.userInfo)
+    </script>
+  <% } else {%>
+    <div>
+      <label for="username">用户名</label>
+      <input type="text" id="username" placeholder="请输入用户名">
+    </div>
+
+    <div>
+      <label for="password">密码</label>
+      <input type="password" id="password" placeholder="请输入密码">
+    </div>
+
+    <div>
+      <input type="text" id="captcha" placeholder="请输入验证码" />
+      <img src="<%= API_PREFIX%>/auth/captcha" alt="captcha" />
+    </div>
+
+    <div>
+      <button id="submit">登录</button>
+    </div>
+
+    <script>
+      const formUsername = document.getElementById('username')
+      const formPassword = document.getElementById('password')
+      const formCaptcha = document.getElementById('captcha')
+      const btn = document.getElementById('submit')
+
+
+      btn.addEventListener('click', async () => {
+        const username = formUsername.value
+        const password = formPassword.value
+        const code = formCaptcha.value
+
+        if (!username || !password || !captcha) return alert('请填写完整信息')
+
+        const res = await fetch(`<%= API_PREFIX%>/auth/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            username,
+            password: SparkMD5.hash(password),
+            code: SparkMD5.hash(code)
+          })
+        })
+
+        const body = await res.json()
+
+        if (body.code !== 200) {
+          refreshCaptcha()
+
+          return alert(body.message)
+        }
+
+        location.reload()
+      })
+
+      function refreshCaptcha() {
+        const img = document.querySelector('img')
+        img.src = `<%= API_PREFIX%>/auth/captcha?${Date.now()}`
+      }
+    </script>
+  <% } %>
+</body>
+</html>

@@ -1,11 +1,10 @@
 import { BadRequestException, CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import type { Request } from "express";
-// @ts-ignore
 import md5 from "md5";
 
 import { APP_CONFIG } from "@/config";
-import { ConfigTokenEnum, DecoratorSymbol } from "@/constants";
+import { CONFIG_TOKEN_ENUM, DECORATOR_SYMBOL } from "@/consts";
 
 const signatureKey = "signature";
 
@@ -15,14 +14,19 @@ export class RequestNonceSignatureGuard implements CanActivate {
   constructor(private readonly reflector: Reflector) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    if (this.appConfig.__is_Dev__ && this.appConfig[ConfigTokenEnum.SIGNATURE_IGNORE]) return true;
+    if (this.appConfig.__is_Dev__ && this.appConfig[CONFIG_TOKEN_ENUM.SIGNATURE_IGNORE]) return true;
 
     const ctx = context.switchToHttp();
     const request = ctx.getRequest<Request>();
 
+    const isFromSwagger = request.headers["x-from-swagger"];
+
+    // swagger中忽略
+    if (isFromSwagger) return true;
+
     const signatureRequired =
-      this.reflector?.get<boolean>(DecoratorSymbol.HTTP_SIGNATURE, context.getHandler()) ??
-      this.reflector?.get<boolean>(DecoratorSymbol.HTTP_SIGNATURE, context.getClass()) ??
+      this.reflector?.get<boolean>(DECORATOR_SYMBOL.HTTP_SIGNATURE, context.getHandler()) ??
+      this.reflector?.get<boolean>(DECORATOR_SYMBOL.HTTP_SIGNATURE, context.getClass()) ??
       true;
 
     if (!signatureRequired) return true;

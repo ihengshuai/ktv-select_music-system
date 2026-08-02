@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%=title %></title>
+</head>
+
+<body>
+  <h1>这里演示图片格式</h1>
+  <h3>代码没有排错，请直接参考代码</h3>
+  <ul>
+    <li>src/views/upload.ejs</li>
+    <li>src/modules/testing/testing.controller.ts</li>
+    <li>src/modules/testing/testing-file.service.ts</li>
+  </ul>
+
+  <label for="normal-upload">普通小文件：</label>
+  <input type="file" id="normal-upload" accept="image/*">
+  <br>
+  <br>
+  <hr>
+  <br>
+  <label for="big-upload">大文件：</label>
+  <input type="file" id="big-upload">
+  <br>
+  <img id="img" width="400">
+
+  <script>
+    const FILE_TYPE = {
+      /**
+       * 图片
+       */
+      IMAGE: 'img',
+      /**
+       * 音频
+       */
+      AUDIO: 'audio',
+      /**
+       * 视频
+       */
+      VIDEO: 'video',
+      /**
+       * 文件
+       */
+      FILE: 'file',
+    }
+
+    const API_PREFIX = '<%=API_PREFIX %>' || '/api/testing/testing-file'
+  </script>
+
+  <!-- 小文件上传 -->
+  <script>
+    const uploadInput = document.querySelector("#normal-upload");
+
+    uploadInput?.addEventListener("change", uploadFile);
+    async function uploadFile(e) {
+      const files = e.target.files;
+      if (!files?.length) return;
+      const file = files[0];
+      const formData = new FormData();
+      formData.append('type', FILE_TYPE.IMAGE); // 类型为图片
+      formData.append('name', 'jack');
+      formData.append('file', file);
+      const res = await fetch(`${API_PREFIX}/upload/normal`, { method: 'post', body: formData, });
+      const data = await res.json();
+      console.log(data);
+      document.querySelector("#img").setAttribute("src", merged.data.url);
+    }
+  </script>
+
+  <script>
+    var CONCURRENCY_STATUS;
+    (function (CONCURRENCY_STATUS) {
+      CONCURRENCY_STATUS["PENDING"] = "pending";
+      CONCURRENCY_STATUS["END"] = "end";
+    })(CONCURRENCY_STATUS || (CONCURRENCY_STATUS = {}));
+    class PromiseConcurrency {
+      _limit;
+      _retry;
+      _activeCount = 0;
+      _skipError;
+      requestQueue;
+      _status = CONCURRENCY_STATUS.PENDING;
+      constructor(opts) {
+        this._limit = opts?.limit ?? (Number?.MAX_SAFE_INTEGER || 9999);
+        this._retry = opts?.retry ?? 0;
+        this._skipError = opts?.skipError ?? false;
+        this.requestQueue = [];
+      }
+      get activeCount() {
+        return this._activeCount;
+      }
+      get pendingCount() {
+        return this.requestQueue.length;
+      }
+      append(promiseFn, opts) {
+        if (this._status === CONCURRENCY_STATUS.END) this.clear();
+        return new Promise((resolve, reject) => {
+          const payload = {
+            promiseFn,
+            resolve,
+            reject,
+            retry: opts?.retry ?? this._retry,
+            skipError: opts?.skipError ?? this._skipError,
+          };
+          this.queue(payload);
+        });
+      }
+      async queue(current) {
+        const { promiseFn, resolve, reject, skipError } = current;
+        if (this._activeCount < this._limit) {
+          try {
+            this._activeCount += 1;
+            const res = await promiseFn();
+            resolve(res);
+            this._activeCount -= 1;
+            this.next();
+          } catch (err) {
+            if (current.retry) {
+              current.retry -= 1;
+              this._activeCount -= 1;
+              this.queue({
+                promiseFn,
+                resolve,
+                reject,
+                retry: current.retry,
+                skipError: current.skipError,
+              });
+            } else {
+              if (skipError) {
+                resolve(err);
+                this._activeCount -= 1;
+                this.next();
+              } else {
+                this._status = CONCURRENCY_STATUS.END;
+                reject(err);
+              }
+            }
+          }
+        } else {
+          this.requestQueue.push(current);
+        }
+      }
+      async next() {
+        if (
+          this._activeCount < this._limit &&
+          this.requestQueue?.length &&
+          this._status === CONCURRENCY_STATUS.PENDING
+        ) {
+          const nextRequest = this.requestQueue.shift();
+          this.queue(nextRequest);
+        } else if (this._status === CONCURRENCY_STATUS.END) {
+          this.clear();
+        }
+      }
+      clear() {
+        this.requestQueue = [];
+        this._activeCount = 0;
+        this._status = CONCURRENCY_STATUS.PENDING;
+      }
+    }
+  </script>
+
+  <!-- 大文件分片上传 -->
+  <script>
+    const bigUploadInput = document.querySelector("#big-upload");
+    bigUploadInput.addEventListener("change", uploadBigFile);
+
+    const CHUNK_SIZE = 1024 * 1024 / 10; // 500kb 测试图片
+    async function uploadBigFile(e) {
+      const files = e.target.files;
+      if (!files?.length) return;
+      const file = files[0];
+      const chunks = await createChunks(file);
+      const worker = new Worker('/js/web-worker/upload.worker.js');
+      worker.postMessage({ chunks });
+      worker.onmessage = async e => {
+        const hash = e.data.hash;
+
+        // 上传前先请求当前文件上传情况：成功上传；没上传；部分chunk上传
+        const uploadedList = await request({ url: `${API_PREFIX}/upload/chunk?originName=${file.name}&hash=${hash}&type=${FILE_TYPE.IMAGE}`, headers: { 'Content-Type': 'application/json' } });
+        // -1 表示已经上传成功了
+        if (uploadedList?.data.length === -1) {
+          console.log('已经上传过了');
+          document.querySelector("#img").setAttribute("src", uploadedList.data.url);
+          return;
+        }
+
+        let requestList = chunks.map((chunk, idx) => {
+          const formData = new FormData();
+          formData.append('originName', file.name);
+          formData.append('chunk', chunk);
+          formData.append('index', idx);
+          formData.append('type', FILE_TYPE.IMAGE);
+          formData.append('hash', hash);
+          return formData;
+        });
+        if (uploadedList?.data?.length > 0) {
+          console.log('部分chunk上传');
+          requestList = requestList.filter((l, idx) => !uploadedList?.data?.list?.includes(idx));
+        }
+        const rcl = new PromiseConcurrency({ limit: 5, retry: 3 }); // 最大请求并发数为5
+        requestList = requestList.map((data) => rcl.append(() => request({ data, url: `${API_PREFIX}/upload/chunk`, method: 'post' })));
+        const res = await Promise.all(requestList);
+        console.log(res);
+        const merged = await request({ url: `${API_PREFIX}/file/upload/chunk/merge`, method: 'post', data: JSON.stringify({ originName: file.name, hash, type: FILE_TYPE.IMAGE }), headers: { 'Content-Type': 'application/json' } });
+        console.log(merged);
+        document.querySelector("#img").setAttribute("src", merged.data.url);
+      };
+    }
+
+    /**
+     * file按chunksize切片
+     * @file 文件 blob
+     * @size chunk大小
+     */
+    function createChunks(file, chunksize = CHUNK_SIZE) {
+      const chunkList = [];
+      let offset = 0;
+      while (offset < file.size) {
+        chunkList.push(file.slice(offset, offset + chunksize));
+        offset += chunksize;
+      }
+      return chunkList;
+    }
+
+    function request({ data, method = 'get', url, headers = {} }) {
+      return new Promise(resolve => {
+        fetch(url, { method, body: data, headers })
+          .then(res => res.json())
+          .then(res => resolve(res));
+      });
+    }
+  </script>
+</body>
+
+</html>

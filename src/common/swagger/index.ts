@@ -1,12 +1,21 @@
+import { ConfigService } from "@nestjs/config";
 import { NestExpressApplication } from "@nestjs/platform-express";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
-import { APP_CONFIG } from "@/config";
+import { APP_CONFIG, IConfig } from "@/config";
+
+export * from "./list-response.schema";
+export * from "./model-response.schema";
 
 export const initSwagger = (app: NestExpressApplication) => {
+  const config = app.get(ConfigService<IConfig>);
+
+  const title = config.get("APP_CONFIG.APP_TITLE");
+
   const swaggerConfig = new DocumentBuilder()
-    .setTitle(APP_CONFIG.APP_TITLE)
+    .setTitle(title)
     // .addSecurity('basic', { type: 'http', scheme: 'basic' })
+    // .addGlobalParameters({ name: "Cookie", in: "header", required: true })
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig, {
@@ -34,10 +43,15 @@ export const initSwagger = (app: NestExpressApplication) => {
     return paths;
   }, {});
 
-  SwaggerModule.setup(`${APP_CONFIG.API_PREFIX}/swagger.html`, app, document, {
-    customSiteTitle: APP_CONFIG.APP_TITLE,
+  SwaggerModule.setup(`${APP_CONFIG.API_PREFIX}/swagger-ui.html`, app, document, {
+    customSiteTitle: title + " API Docs",
     swaggerOptions: {
       docExpansion: "none", // 默认不展开文档
+      requestInterceptor: req => {
+        req.headers["x-from-swagger"] = true;
+
+        return req;
+      },
     },
   });
 };

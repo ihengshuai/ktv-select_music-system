@@ -8,3 +8,5 @@ export function setupStore(app: App) {
 }
 export * from "./modules/app";
 export * from "./modules/user";
+export * from "./modules/music-player";
+export * from "./modules/music-order";

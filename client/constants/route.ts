@@ -7,37 +7,51 @@
  *  子：dashboard-welcome
  */
 export enum ROUTE_NAME {
+  // ====================== 客户端 ======================
+  clientHome = "clientHome",
+  clientSearchMusic = "clientSearchMusic",
+
+  // ====================== 管理端 ======================
+  adminHome = "adminHome",
+
   // dashboard
   dashboard = "dashboard",
-  welcome = "dashboard-welcome",
-  analysis = "dashboard-analysis",
+  dashboardMusic = "dashboard-music",
+  dashboardIncome = "dashboard-income",
 
-  // 图表
-  chart = "chart",
+  // 枚举编码
+  enumCode = "enum-code",
 
-  // 表单
-  form = "form",
-  formBasic = "form-basic",
+  // 曲库管理
+  music = "music",
+  musicList = "music-list",
+  musicCreate = "music-create",
+  musicUpdate = "music-update",
+  musicLyrics = "music-lyrics",
+  musicSinger = "music-singer",
+  musicTag = "music-tag",
+  musicRegion = "music-region",
+  musicStyle = "music-style",
+  musicLanguage = "music-language",
 
-  // 表格
-  table = "table",
-  tableReadme = "table-readme",
-  tableBasic = "table-basic",
-  tableRouteMapping = "table-routemapping",
-  tableAdvance = "table-advance",
-  tableOperate = "table-advance-operate",
-  tableForm = "table-advance-form",
-  tableComplex = "table-advance-complex",
-  tableDetail = "table-advance-complex-detail",
+  // 订单管理
+  order = "order",
+  orderList = "order-list",
+  orderDetail = "order-list-detail",
+  orderPay = "order-pay",
 
   // 登录
   login = "login",
   register = "register",
+  systemInit = "system-init",
 
   // 用户
   userManage = "user-manage",
   userPassword = "user-password",
   userPersonal = "user-personal",
+
+  // 文件
+  staticManager = "static-manager",
 
   // 其他
   redirect = "redirect",

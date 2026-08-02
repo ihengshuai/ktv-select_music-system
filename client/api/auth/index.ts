@@ -10,6 +10,7 @@ export const AUTH_API = {
   register: `/auth/register`,
   logout: `/auth/logout`,
   captcha: `/auth/captcha`,
+  systemInit: `/auth/system-init`,
 };
 
 /** 验证用户身份 */
@@ -17,6 +18,16 @@ export function getUserInfo(config?: IHttpRequestConfig): Promise<IUserInfo> {
   return request.get(AUTH_API.auth, {
     ignoreCancelToken: true,
     captureError: false,
+    ...config,
+  });
+}
+
+/** 系统初始化 */
+export function systemInitApi(data: any, config?: IHttpRequestConfig): Promise<boolean> {
+  return request.post(AUTH_API.systemInit, {
+    data,
+    ignoreCancelToken: true,
+    captureError: true,
     ...config,
   });
 }

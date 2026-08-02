@@ -4,21 +4,22 @@ import { RouteRecordRaw, createRouter, createWebHashHistory, createWebHistory } 
 import { useConfig } from "@/config";
 import { ROUTE_NAME } from "@/constants/route";
 import { RouterView } from "@/layout/helper";
+import { LazyComponent } from "@/layout/page/lazy-component";
 
 import { baseRoutes } from "./routes/basic";
 import { authRoute } from "./routes/modules/auth-route";
-import { chartRoute } from "./routes/modules/chart-route";
+import { ClientRoute } from "./routes/modules/client-route";
 import { dashboardRoute } from "./routes/modules/dashboard-route";
-import { formRoute } from "./routes/modules/form-route";
-import { tableRoute } from "./routes/modules/table-routes";
+import { enumCodeRoute } from "./routes/modules/enum-code-route";
+import { musicRoute } from "./routes/modules/music-route";
+import { orderRoute } from "./routes/modules/order-route";
+import { staticRoute } from "./routes/modules/static-route";
 import { userRoute } from "./routes/modules/user-route";
 
 const config = useConfig();
 const Layout = () => import("@/layout/default");
-// TODO: 路由文件如果能和路由保持一致，可以在访问页面时，通过manifest拿到当前路由的所有资源
-// 通过server push 推送页面资源提高性能
+const ClientLayout = () => import("@/layout/page/client-layout");
 
-// 这里不使用动态路由,有需要自行使用addRoute
 const routes: RouteRecordRaw[] = [
   {
     path: `/:locale(${config.LANGUAGES.join("|")})?/`,
@@ -26,13 +27,47 @@ const routes: RouteRecordRaw[] = [
     children: [
       {
         path: "",
-        redirect: { name: ROUTE_NAME.dashboard },
-        component: Layout,
-        children: [...dashboardRoute, ...chartRoute, ...formRoute, ...tableRoute, ...userRoute],
+        redirect: { name: ROUTE_NAME.clientHome },
+        component: ClientLayout,
+        children: [
+          {
+            path: "",
+            name: ROUTE_NAME.clientHome,
+            component: LazyComponent(() => import("@/views/client/client-home-music")),
+            meta: {
+              title: "menu.client-home",
+            },
+          },
+          ...ClientRoute,
+        ],
       },
+
+      {
+        path: "admin",
+        redirect: { name: ROUTE_NAME.adminHome },
+        component: Layout,
+
+        children: [
+          {
+            path: "",
+            name: ROUTE_NAME.adminHome,
+            component: LazyComponent(() => import("@/views/home")),
+            meta: {
+              title: "menu.home",
+            },
+          },
+
+          ...dashboardRoute,
+          ...userRoute,
+          ...staticRoute,
+          ...enumCodeRoute,
+          ...musicRoute,
+          ...orderRoute,
+        ],
+      },
+
       ...baseRoutes,
       ...authRoute,
-
       {
         path: "testing",
         name: "testing",

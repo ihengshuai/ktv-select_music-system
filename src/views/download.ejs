@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%=title %></title>
+
+  <style>
+    .progress {}
+
+    .progress-slot {
+      display: inline-block;
+      position: relative;
+      width: 200px;
+      height: 10px;
+      border-radius: 5px;
+      background: rgba(0 0 0 / 30%);
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      display: inline-block;
+      position: absolute;
+      left: 0;
+      width: 100%;
+      border-radius: 5px;
+      background: slateblue;
+      height: 100%;
+      transition: all 200ms linear;
+      transform: translate3d(-100%, 0, 0);
+    }
+  </style>
+</head>
+
+<body>
+  <h1>参考代码即可</h1>
+
+  <div class="progress">
+    <label>进度：</label>
+    <span class="progress-slot">
+      <span class="progress-bar"></span>
+    </span>
+    <span class="progress-num">0.00</span>%
+  </div>
+
+  <button id="browser">使用浏览器直接下载</button>
+  <button id="blob">流下载</button>
+  <button id="staticURL">静态资源地址</button>
+  <button id="chunked">chunked</button>
+
+  <hr>
+
+  <video src="<%=API_PREFIX %>/video/range" controls="controls" muted style="max-width: 100%;"></video>
+
+  <hr>
+
+  <figure>
+    <img src="<%=API_PREFIX %>/image/chunk" style="max-width: 100%;">
+    <figcaption>自定义chunk流</figcaption>
+  </figure>
+
+  <figure id="img-range">
+    <figcaption>范围图片</figcaption>
+    <button id="img-range-btn">请求范围图片</button>
+  </figure>
+
+  <button id="big-img-download">大图片分段下载</button>
+
+  <script>
+    const browserBtn = document.querySelector('#browser');
+    const blobBtn = document.querySelector('#blob');
+    const progress = document.querySelector('.progress-bar');
+    const progressNum = document.querySelector('.progress-num');
+    const staticURL = document.querySelector("#staticURL");
+
+    browserBtn.addEventListener("click", () => {
+      const a = document.createElement('a');
+      a.setAttribute('href', '<%=API_PREFIX %>/iso');
+      a.download = true;
+      a.click();
+    });
+
+    blobBtn.addEventListener('click', request);
+    // request();
+    function request() {
+      progress.setAttribute('style', 'transform: translate3d(-100%, 0, 0)');
+      progressNum.textContent = 0.00;
+      const xhr = new XMLHttpRequest();
+      xhr.responseType = 'blob';
+      // xhr.onprogress = ()
+      xhr.open('get', "<%=API_PREFIX %>/iso");
+      xhr.send();
+      xhr.addEventListener('progress', event => {
+        if (event.lengthComputable) {
+          const percentComplete = (event.loaded / event.total) * 100;
+          progress.setAttribute('style', `transform: translate3d(-${(100 - percentComplete).toFixed(2)}%, 0, 0)`);
+          progressNum.textContent = percentComplete.toFixed(2);
+        }
+      });
+      xhr.onreadystatechange = () => {
+        if (xhr.readyState === XMLHttpRequest.DONE || xhr.status === 200) {
+          if (!xhr.response) return;
+          const filenameStr = xhr.getResponseHeader('Content-Disposition')?.split(";")[1]?.split('=')[1];
+          const filename = filenameStr.slice(1, filenameStr.length - 1);
+          useDownload(filename, xhr.response);
+        }
+      };
+    }
+
+    // 请求静态资源地址
+    staticURL.addEventListener("click", fetchStaticAsset);
+    async function fetchStaticAsset() {
+      progress.setAttribute('style', 'transform: translate3d(-100%, 0, 0)');
+      progressNum.textContent = 0.00;
+      const res = await fetch('/1.pdf');
+      const fileSize = res.headers.get('content-length');
+      const filename = res.headers.get('Content-Disposition')?.split(";")[1]?.split('=')[1] || res.url.match(/\/([^\/]\.[^\/]*)/i)?.[1] || 'download.txt';
+      const blobs = [];
+      let downloaded = 0;
+      const writer = new WritableStream({
+        write(chunk) {
+          blobs.push(chunk);
+          downloaded += chunk.length;
+          const percentComplete = (downloaded / fileSize) * 100;
+          progress.setAttribute('style', `transform: translate3d(-${(100 - percentComplete).toFixed(2)}%, 0, 0)`);
+          progressNum.textContent = percentComplete.toFixed(2);
+        },
+        close() {
+          useDownload(filename, ...blobs);
+        }
+      });
+      res.body.pipeTo(writer);
+    }
+
+    function useDownload(filename, ...blobs) {
+      const blob = new Blob([...blobs]);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.setAttribute('href', url);
+      a.download = filename || 'file.txt';
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+  </script>
+
+  <!-- 测试chunked传输 -->
+  <script>
+    const chunkedBtn = document.querySelector("#chunked");
+    chunkedBtn.addEventListener("click", fetchChunked);
+    async function fetchChunked() {
+      const res = await fetch("<%=API_PREFIX %>/chunked");
+
+      // 1. 这种直接读取
+      // const blobData = await res.blob();
+      // // console.log(blobData)
+      // const blob = new Blob([blobData], { type: 'text/plain' });
+      // const url = URL.createObjectURL(blob);
+      // window.open(url, '_blank');
+      // URL.revokeObjectURL(url);
+
+      // 2. 创建读取流
+      const total = res.headers.get('Content-Length');
+      let downloaded = 0;
+      const blobs = [];
+      // const decoder = new TextDecoder();
+      const writer = new WritableStream({
+        write(chunk) {
+          console.log(chunk);
+          blobs.push(chunk);
+          downloaded += chunk.length;
+          const percentComplete = (downloaded / total) * 100;
+          progress.setAttribute('style', `transform: translate3d(-${(100 - percentComplete).toFixed(2)}%, 0, 0)`);
+          progressNum.textContent = percentComplete.toFixed(2);
+        },
+        close() {
+          console.log('传输结束...');
+          const blob = new Blob([...blobs], { type: 'text/plain;charset=utf-8' });
+          const url = URL.createObjectURL(blob);
+          window.open(url, '_blank');
+          URL.revokeObjectURL(url);
+        }
+      });
+      res.body.pipeTo(writer);
+    }
+  </script>
+
+  <!-- 图片测试 -->
+  <script>
+    const imgRangeElem = document.querySelector("#img-range");
+    const imgRangeBtn = document.querySelector("#img-range-btn");
+
+    imgRangeBtn.addEventListener("click", requestRangeImg);
+    async function requestRangeImg() {
+      const res = await fetch("<%=API_PREFIX %>/image/range", {
+        method: 'post', headers: {
+          Range: `bytes=-${1024 * 200}`,
+        }
+      });
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const img = document.createElement("img");
+      img.src = url;
+      img.setAttribute("style", 'max-width:100%');
+      imgRangeElem.insertBefore(img, imgRangeElem.firstChild);
+      setTimeout(() => URL.revokeObjectURL(url));
+    }
+
+    // 大图片分段下载
+    const bigImgBtn = document.querySelector("#big-img-download");
+    bigImgBtn.addEventListener("click", downloadBigImage);
+    async function downloadBigImage() {
+      const chunkSize = 1024 * 1024 * 3; // 每段大小
+      let fetchedSize = 0;
+      const res = await (await fetch('<%=API_PREFIX %>/image/size', { method: 'get' })).json();
+      const fetchSize = res.data;
+      console.log('图片总大小：', fetchSize);
+      const buffers = [];
+      while (fetchedSize < fetchSize) {
+        const res = await fetch("<%=API_PREFIX %>/image/range", {
+          method: 'post', headers: {
+            Range: `bytes=${fetchedSize}-${Math.min(fetchedSize + chunkSize, fetchSize)}`,
+          }
+        });
+        fetchedSize += chunkSize;
+        buffers.push(await res.arrayBuffer());
+      }
+      console.log(buffers);
+      const unit8Arr = new Uint8Array(fetchSize);
+      let offset = 0; // 偏移量
+      buffers.forEach(buffer => {
+        const chunkUnit8 = new Uint8Array(buffer);
+        unit8Arr.set(chunkUnit8, offset);
+        offset += chunkUnit8.length;
+      });
+      console.log(unit8Arr);
+      const blob = new Blob([unit8Arr.buffer], { type: 'image/jpg' });
+      const url = URL.createObjectURL(blob);
+      console.log(url);
+      window.open(url, '_blank');
+      // useDownload(`cat.${+new Date()}.jpg`, blob);
+    }
+  </script>
+</body>
+
+
+</html>

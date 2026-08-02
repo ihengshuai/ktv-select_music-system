@@ -11,6 +11,7 @@
     "jsx": "preserve",
     "jsxImportSource": "vue",
     "sourceMap": true,
+    "ignoreDeprecations": "6.0",
     "outDir": "./dist/server",
     "baseUrl": "./",
     "incremental": true,

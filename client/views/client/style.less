@@ -1,0 +1,22 @@
+/* stylelint-disable number-max-precision */
+.music-home {
+  position: relative;
+  height: 100%;
+
+  &__nav {
+    bottom: 40px;
+    left: 50%;
+    width: 80%;
+    max-width: 1080px;
+    height: 100px;
+    background-image: linear-gradient(
+      to right,
+      oklab(0.279 0.0538405 0.0550473 / 60%) 0%,
+      oklab(0 0 0 / 80%) 50%,
+      oklab(0.279 0.0538405 0.0550473 / 60%) 100%
+    );
+    backdrop-filter: blur(8px);
+    border-radius: 16px;
+    transform: translate3d(-50%, 0, 0);
+  }
+}

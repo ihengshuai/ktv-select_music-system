@@ -25,10 +25,6 @@ export function setI18nLang(lang: PROJECT_LANGS) {
   // TODO: 设置请求相关语言信息
 }
 
-/**
- * 加载当前语言包
- * @param lang 当前语言
- */
 export async function loadLangResourceAsync(lang?: PROJECT_LANGS) {
   const cookieLang = getCookie(config.COOKIE_LANG_KEY) as PROJECT_LANGS;
   lang = lang || (validateLocale(cookieLang) ? cookieLang : config.DEFAULT_LANGUAGE);
@@ -43,9 +39,6 @@ export async function loadLangResourceAsync(lang?: PROJECT_LANGS) {
   }
 }
 
-/**
- * 验证是否合法的语言
- */
 export function validateLocale(lang: any) {
   return Object.values(config.LANGUAGES).includes(lang);
 }

@@ -4,6 +4,7 @@ import babel from "@rollup/plugin-babel";
 import vue from "@vitejs/plugin-vue";
 import vueJsx from "@vitejs/plugin-vue-jsx";
 import { defineConfig } from "vite";
+import { analyzer } from "vite-bundle-analyzer";
 import compression from "vite-plugin-compression";
 
 import { envConfig, __isDev__ } from "./scripts/env";
@@ -15,6 +16,36 @@ const outDir = resolvePath(envConfig.CLIENT_OUTDIR);
 // https://vitejs.dev/config/
 export default async () => {
   const Unocss = (await import("unocss/vite")).default;
+
+  const plugins = [
+    vue(),
+    vueJsx(),
+    babel({
+      compact: false,
+      skipPreflightCheck: true,
+      babelHelpers: "bundled",
+      extensions: [".js", ".jsx", ".ts", ".tsx"],
+      plugins: [
+        "babel-plugin-transform-typescript-metadata",
+        ["@babel/plugin-proposal-decorators", { version: "legacy" }],
+        ["@babel/plugin-transform-class-properties", { loose: true }],
+      ],
+    }),
+    Unocss(),
+    viteManifestPlugin(),
+  ];
+
+  if (__isDev__) {
+    plugins.push(
+      compression({
+        algorithm: "gzip",
+      })
+    );
+  }
+
+  if (!__isDev__ && envConfig.BUNDLE_ANALYZER) {
+    plugins.push(analyzer());
+  }
 
   return defineConfig({
     base: __isDev__ ? "/" : envConfig.VITE_BASE_URL,
@@ -80,35 +111,14 @@ export default async () => {
       ],
     },
 
-    plugins: [
-      vue(),
-      vueJsx(),
-      babel({
-        compact: false,
-        skipPreflightCheck: true,
-        babelHelpers: "bundled",
-        extensions: [".js", ".jsx", ".ts", ".tsx"],
-        plugins: [
-          "babel-plugin-transform-typescript-metadata",
-          ["@babel/plugin-proposal-decorators", { version: "legacy" }],
-          ["@babel/plugin-transform-class-properties", { loose: true }],
-        ],
-      }),
-      Unocss(),
-      viteManifestPlugin(),
-      __isDev__
-        ? null
-        : compression({
-            algorithm: "gzip",
-          }),
-    ],
+    plugins,
 
     test: {
       globals: true,
       environment: "jsdom",
-      include: ["__test__/**/*.{test,spec}.?(c|m)[jt]s?(x)"],
-      setupFiles: ["__test__/setup/setup.ts"],
-      globalSetup: ["__test__/setup/setup.global.ts"],
+      include: ["__test__/unit/**/*.{test,spec}.?(c|m)[jt]s?(x)"],
+      setupFiles: ["__test__/unit/setup/setup.ts"],
+      globalSetup: ["__test__/unit/setup/setup.global.ts"],
     },
   });
 };

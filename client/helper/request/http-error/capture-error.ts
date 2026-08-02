@@ -1,20 +1,31 @@
 import { message } from "ant-design-vue";
 
+import { HttpBusinessException } from "@/helper/exception";
 import { IConstructor } from "@/typings/common/type";
 
-export class HttpError extends Error {
-  code: string;
-  constructor(code: string, message: string) {
-    super(message);
-    this.code = code;
+export abstract class HttpBusinessExceptionMsg extends HttpBusinessException {
+  showExceptionMsg: boolean;
+
+  readonly exception: HttpBusinessException;
+
+  constructor(exception: HttpBusinessException) {
+    super(exception.message, exception.code, exception.stack);
+
+    this.exception = exception;
+    // @ts-expect-error
+    this.exception.message = this.msg || exception.message;
   }
 
+  abstract get msg(): string | null;
+
   notice() {
-    this.message && message.error(this.message);
+    if (this.showExceptionMsg) {
+      this.msg && message.error(this.msg);
+    }
   }
 }
 
-export function CaptureError(ErrorClass: IConstructor<HttpError>) {
+export function CaptureHttpExceptionMsg(ErrorClass: IConstructor<HttpBusinessExceptionMsg>) {
   return function (target: InstanceType<IConstructor>, propertyKey: string, descriptor: PropertyDescriptor) {
     const originMethod = descriptor.value;
 
@@ -26,7 +37,7 @@ export function CaptureError(ErrorClass: IConstructor<HttpError>) {
 
         httpError.notice();
 
-        throw httpError;
+        throw httpError.exception;
       }
     };
   };

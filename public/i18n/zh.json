@@ -48,9 +48,9 @@
   "sex": "性别",
   "menu": {
     "home": "首页",
-    "dashboard": "数据面板",
-    "welcome": "欢迎页面(新标签)",
-    "analysis": "分析页",
+    "dashboard": "数据看板",
+    "dashboard-music": "歌曲汇总",
+    "dashboard-income": "交易汇总",
     "chart": "图表",
     "line-chart": "折线图",
     "bar": "柱状图",
@@ -68,7 +68,7 @@
     "table-advance": "多功能表",
     "table-complex": "复杂表格",
     "custom-lazy": "组件懒加载",
-    "readme": "说明",
+
     "lazy-default": "默认懒加载",
     "lazy-delay": "加载时长",
     "lazy-error": "默认加载Error",
@@ -80,7 +80,29 @@
     "settings": "设置",
     "user-manage": "用户管理",
     "user-password": "修改密码",
-    "user-personal": "个人信息"
+    "user-personal": "个人信息",
+    "static-manager": "静态资源管理",
+    "enum-code": "常量编码",
+
+    "music-manager": "曲库管理",
+    "music-list": "歌曲管理",
+    "music-create": "添加歌曲",
+    "music-update": "编辑歌曲",
+    "music-lyrics": "歌词管理",
+    "music-singer": "歌手管理",
+    "music-tag": "标签管理",
+    "music-style": "风格管理",
+    "music-region": "地区管理",
+    "music-language": "语种管理",
+
+    "order": "订单管理",
+    "order-list": "订单列表",
+    "order-detail": "订单详情",
+    "order-pay": "付款记录",
+
+    "readme": "文档",
+
+    "client-home": "KTV点歌系统"
   },
   "table": {
     "total": "第 {begin}-{end} 条, 共 {total} 条数据"

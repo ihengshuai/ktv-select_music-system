@@ -6,16 +6,16 @@ import { NextFunction, Request, Response } from "express";
 import { ViteDevServer, createServer as createViteServer } from "vite";
 
 import { APP_CONFIG } from "@/config";
-import { YoN } from "@/constants";
+import { YON } from "@/consts";
 import { env } from "@/utils/env";
 
 const { __is_Prod__, __isHttps__, HMR_PORT, SSL_CERTIFICATE, SSL_CERTIFICATE_KEY, API_PREFIX } = APP_CONFIG;
 
 let viteIns: ViteDevServer;
 export async function ViteMiddleware(req: Request, res: Response, next: NextFunction) {
-  const isOnlyServer = env("ONLY_SERVER") === YoN.Y;
+  const isOnlyServer = env("ONLY_SERVER") === YON.Y;
 
-  if (isOnlyServer || __is_Prod__) {
+  if (isOnlyServer || __is_Prod__ || req.url.startsWith("/page") /* 过滤掉ejs控制器,若没有可删除 */) {
     return next();
   }
   if (!viteIns) {

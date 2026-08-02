@@ -2,7 +2,6 @@
 
 module.exports = {
   extends: ["@commitlint/config-conventional" /*"cz"*/],
-  ignores: [commit => /^init.*/.test(commit)],
   rules: {
     'type-enum': [
       2,

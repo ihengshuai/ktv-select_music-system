@@ -72,6 +72,9 @@ export enum TABLE_OPERATION {
    * 删除
    */
   DELETE,
+  PLAY,
+  RENEW,
+  FORCE_OFFLINE,
   /**
    * 置顶
    */

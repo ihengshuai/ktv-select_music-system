@@ -1,4 +1,4 @@
-FROM node:18.20.0-alpine3.19
+FROM node:18.19.0-alpine3.19
 
 WORKDIR /app
 
@@ -21,7 +21,8 @@ COPY vite.config.ts vite.config.ts
 COPY ecosystem.config.js ecosystem.config.js
 COPY .npmrc .npmrc
 
-RUN npm install --registry=https://registry.npmmirror.com && npm run build
+# RUN npm install -g npm --registry=https://registry.npm.taobao.org
+RUN npm install --registry=https://registry.npm.taobao.org && npm run build
 RUN npm install pm2 -g
 
 ENTRYPOINT ["pm2-runtime", "start", "ecosystem.config.js", "--env", "production"]

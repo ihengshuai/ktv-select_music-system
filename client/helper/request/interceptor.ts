@@ -8,10 +8,10 @@ import requestSignatureInterceptor from "./interceptors/request-signature.interc
 /** 响应拦截器 */
 import responseNecessaryInterceptor from "./interceptors/response-necessary.interceptor";
 import responseCodeInterceptor from "./interceptors/response-code.interceptor";
-import responseNoticeInterceptor from "./interceptors/response-notice.interceptor";
+import responseExceptionInterceptor from "./interceptors/response-exception.interceptor";
 
 const requestInterceptors = [requestNecessaryInterceptor, requestSignatureInterceptor];
-const responseInterceptors = [responseNecessaryInterceptor, responseCodeInterceptor, responseNoticeInterceptor];
+const responseInterceptors = [responseNecessaryInterceptor, responseCodeInterceptor, responseExceptionInterceptor];
 
 requestInterceptors.reverse().forEach(interceptor => {
   HttpClient.axiosInstance.interceptors.request.use(interceptor.onFulfilled, interceptor.onRejected);

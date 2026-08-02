@@ -1,12 +1,13 @@
 import { AxiosError, AxiosResponse } from "axios";
 
+import { HttpBusinessException, HttpException } from "@/helper/exception";
 import { snakeToCamel } from "@/util";
 
 import { CancelToken } from "../cancel-token";
 
 function onFulfilled(res: AxiosResponse) {
   const { payload, config } = res;
-  const { data, code = 500, error, message } = payload || {};
+  const { data, code = 500, message } = payload || {};
 
   CancelToken.instance.cancel(config);
 
@@ -14,7 +15,7 @@ function onFulfilled(res: AxiosResponse) {
   if (code === 200 || code < 300) {
     __isDev__ &&
       console.log(
-        `%c 响应日志: %c${config.label ? `【${config.label}】` : ""}`,
+        `%c 响应日志: %c${config.label ? `【${config.label}】` : `【${config.url}】`}`,
         "background:green;padding:2px 4px;color:#fff;font-weight:600",
         null,
         res
@@ -25,21 +26,21 @@ function onFulfilled(res: AxiosResponse) {
   }
 
   // 业务不成功
-  const _error = new Error(error || message || "Server Error...") as AxiosError;
-  _error.response = data;
-  _error.isAxiosError = false;
-  _error.config = config;
-  _error.response = res;
-  _error.code = code as any;
-  throw _error;
+  const exception = new HttpBusinessException(message || "业务未知错误", code, res as unknown as AxiosError<any>);
+
+  throw exception;
 }
 
 function onRejected(error: AxiosError<any>) {
-  if (error.response?.data?.message) {
-    error.message = error.response.data.message;
-  }
+  if (error instanceof HttpException) return Promise.reject(error);
 
-  return Promise.reject(error);
+  const exception = new HttpException(
+    error.response?.data?.message || "未知错误",
+    error.response?.status || 500,
+    error
+  );
+
+  return Promise.reject(exception);
 }
 
 /** 状态码响应拦截器 */

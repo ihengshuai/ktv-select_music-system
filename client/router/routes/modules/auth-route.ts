@@ -5,6 +5,15 @@ import { LazyComponent } from "@/layout/page/lazy-component";
 
 export const authRoute: RouteRecordRaw[] = [
   {
+    path: "system-init",
+    name: ROUTE_NAME.systemInit,
+    component: LazyComponent(() => import("@/views/auth/system-init")),
+    meta: {
+      pageTitle: "menu.register",
+      requireAuth: false,
+    },
+  },
+  {
     path: "login",
     name: ROUTE_NAME.login,
     component: LazyComponent(() => import("@/views/auth/login")),

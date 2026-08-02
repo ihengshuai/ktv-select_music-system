@@ -3,7 +3,7 @@ import { ConsoleLogger, Injectable } from "@nestjs/common";
 import { config as winstonConfig, createLogger, transports, format, type Logger as WinstonLogger } from "winston";
 
 import { APP_CONFIG } from "@/config";
-import { DateFormat } from "@/constants";
+import { DATE_FORMAT } from "@/consts";
 import { formatDate } from "@/utils";
 
 const { combine, timestamp, printf } = format;
@@ -40,7 +40,7 @@ export class ApplicationLoggerService extends ConsoleLogger {
   }
 
   protected getTimestamp(): string {
-    return formatDate(new Date(), DateFormat.DATE_FULLTIME.replaceAll("-", "/"));
+    return formatDate(new Date(), DATE_FORMAT.DATE_FULLTIME.replaceAll("-", "/"));
   }
 
   formatMessage(logLevel, message, pidMessage, formattedLogLevel, contextMessage, timestampDiff) {
@@ -62,8 +62,11 @@ export class ApplicationLoggerService extends ConsoleLogger {
           maxFiles: "90d",
           maxSize: "10M",
           auditFile: "logs/audit/access.json",
-          datePattern: DateFormat.DATE,
-          format: combine(timestamp({ format: () => formatDate(new Date(), DateFormat.DATE_FULLTIME) }), format.json()),
+          datePattern: DATE_FORMAT.DATE,
+          format: combine(
+            timestamp({ format: () => formatDate(new Date(), DATE_FORMAT.DATE_FULLTIME) }),
+            format.json()
+          ),
         }),
 
         new transports.DailyRotateFile({
@@ -72,8 +75,11 @@ export class ApplicationLoggerService extends ConsoleLogger {
           maxFiles: "90d",
           auditFile: "logs/audit/error.json",
           maxSize: "10M",
-          datePattern: DateFormat.DATE,
-          format: combine(timestamp({ format: () => formatDate(new Date(), DateFormat.DATE_FULLTIME) }), format.json()),
+          datePattern: DATE_FORMAT.DATE,
+          format: combine(
+            timestamp({ format: () => formatDate(new Date(), DATE_FORMAT.DATE_FULLTIME) }),
+            format.json()
+          ),
         })
       );
 

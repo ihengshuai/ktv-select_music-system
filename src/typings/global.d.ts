@@ -14,3 +14,7 @@ export type NestedKeyOf<ObjectType extends object> = {
 export type RecordNamePaths<T extends object> = {
   [K in NestedKeyOf<T>]: PropType<T, K>;
 };
+
+export type IDict<T = any> = {
+  [key: string]: T;
+};

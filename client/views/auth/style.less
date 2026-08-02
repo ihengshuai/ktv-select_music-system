@@ -9,6 +9,16 @@
   padding: 0 40px;
   background: #0568c1;
 
+  &.system-init {
+    .@{prefix}__auth-layout__content {
+      max-width: 400px;
+    }
+
+    .@{prefix}__auth-layout__bg {
+      display: none;
+    }
+  }
+
   &__title {
     margin-top: 50px;
     font-size: 40px;
@@ -27,7 +37,7 @@
     box-sizing: border-box;
     flex: 1;
     padding: 40px;
-    background: #fff;
+    background: var(--color-bg-base);
     border-top-left-radius: 8px;
     border-bottom-left-radius: 8px;
     box-shadow: 2px 9px 49px -17px rgb(0 0 0 / 10%);
@@ -37,7 +47,7 @@
       font-size: 30px;
       font-weight: 900;
       line-height: 40px;
-      color: #272346;
+      color: var(--color-text);
       text-align: center;
     }
 
@@ -51,7 +61,7 @@
     flex: 1;
     align-items: center;
     padding: 40px;
-    background: #f4f9fd;
+    background: var(--color-border);
     background-size: cover;
     border-top-right-radius: 8px;
     border-bottom-right-radius: 8px;

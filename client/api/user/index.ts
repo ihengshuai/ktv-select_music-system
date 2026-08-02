@@ -1,12 +1,12 @@
 import { USER_ROLE, USER_STATUS } from "@/constants/user";
 import { BaseController } from "@/helper/request/constructor/base-controller";
 import { Controller, Get, Post } from "@/helper/request/controller/http-controller";
-import { CaptureError } from "@/helper/request/http-error/capture-error";
+import { CaptureHttpExceptionMsg } from "@/helper/request/http-error/capture-error";
 import type { IHttpRequestConfig } from "@/typings/common/http";
 import type { IListQuery, IListResult } from "@/typings/common/table";
 import type { IChangePassword, IUserInfo, IUserInfoUpdateDTO, IUserListFilter } from "@/typings/models/user";
 
-import { TestCaptureError } from "./error-enum";
+import { TestCaptureHttpExceptionMsg } from "./error-enum";
 
 /** 用户控制器 */
 @Controller("/user")
@@ -80,7 +80,7 @@ export class UserController extends BaseController {
   }
 
   /** 测试状态码对应的错误提示 */
-  @CaptureError(TestCaptureError)
+  @CaptureHttpExceptionMsg(TestCaptureHttpExceptionMsg)
   @Post("/testing/capture-error")
   testCaptureError(config?: IHttpRequestConfig) {
     return this.send({ captureError: false, ...config });

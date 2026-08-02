@@ -17,6 +17,11 @@ export interface IUseTablePage<R extends IDict<any> = any, Q extends IDict<any> 
    * @default true
    */
   trace?: boolean;
+  /**
+   * 追踪路由模式
+   * @default push
+   */
+  traceMode?: "push" | "replace";
   /** 表格列 */
   columns: ColumnsType;
   /**
@@ -98,6 +103,7 @@ export function useTablePage<R extends IDict<any>, Q extends IDict<any> = R>(pro
   const router = useRouter();
   const { t } = useI18n();
   const storage: IDict<any> = {};
+  const traceMode = props.traceMode || "push";
   // 当没有请求时不会显示loading
   const requestPendingList = ref<string[]>([]);
   let isStrict = true;
@@ -342,7 +348,7 @@ export function useTablePage<R extends IDict<any>, Q extends IDict<any> = R>(pro
       isStrict = true;
       load();
     } else {
-      router[trace ? "push" : "replace"](newURL);
+      router[traceMode](newURL);
     }
   }
 

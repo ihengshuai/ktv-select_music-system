@@ -8,7 +8,7 @@ import { uploadResourceAPI } from "@/api/static/static.api";
 import { UserController } from "@/api/user";
 import IPanel from "@/components/common/panel";
 import { useConfig } from "@/config";
-import { FileType } from "@/constants/file";
+import { FILE_TYPE } from "@/constants/file";
 import { ROUTE_NAME } from "@/constants/route";
 import { USER_ROLE, USER_STATUS } from "@/constants/user";
 import { getEnumEntity } from "@/helper/get-enum-entity";
@@ -87,7 +87,7 @@ const PersonalPage = defineComponent({
     async function onBeforeUpload(file: File) {
       try {
         uploadState.loading = true;
-        const res = await uploadResourceAPI({ type: FileType.IMAGE, file, appId: APP_ID });
+        const res = await uploadResourceAPI({ type: FILE_TYPE.IMAGE, file, appId: APP_ID });
 
         if (res) {
           message.success("上传成功");

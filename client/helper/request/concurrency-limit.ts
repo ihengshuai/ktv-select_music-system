@@ -1,4 +1,4 @@
-import { CONCURRENCY_STATUS } from "@/constants/http";
+import { CONCURRENCY_STATUS } from "@/constants/http.const";
 import { IRequestConcurrencyLimit, IRequestConcurrencyNotice, IRequestConcurrencyQueue } from "@/typings/common/http";
 
 /**

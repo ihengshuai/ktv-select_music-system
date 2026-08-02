@@ -1,39 +1,63 @@
+import { existsSync } from "fs";
+import { writeFile } from "fs/promises";
+import { resolve } from "path";
+import { cwd } from "process";
+
 import { ConfigType, registerAs } from "@nestjs/config";
 
-import { ConfigDomainEnum, ConfigTokenEnum } from "@/constants";
+import { CONFIG_DOMAIN_ENUM, CONFIG_TOKEN_ENUM } from "@/consts";
 import { env, envBoolean, envNumber } from "@/utils/env";
 
 export const APP_CONFIG = {
-  [ConfigTokenEnum.IS_PROD]: env("NODE_ENV", "development") === "production",
-  [ConfigTokenEnum.IS_DEV]: env("NODE_ENV", "development") !== "production",
-  [ConfigTokenEnum.IS_HTTPS]: env("SSL_CERTIFICATE") && env("SSL_CERTIFICATE_KEY") ? true : false,
-  [ConfigTokenEnum.NODE_ENV]: env("NODE_ENV", "development"),
-  [ConfigTokenEnum.PORT]: envNumber("PORT", 5000),
-  [ConfigTokenEnum.API_PREFIX]: env("API_PREFIX", "/api"),
-  [ConfigTokenEnum.COOKIE_DOMAIN]: env(ConfigTokenEnum.COOKIE_DOMAIN, "localhost"),
-  [ConfigTokenEnum.COOKIE_LANG_KEY]: env(ConfigTokenEnum.COOKIE_LANG_KEY, "__lang"),
-  [ConfigTokenEnum.DEFAULT_LANGUAGE]: env(ConfigTokenEnum.DEFAULT_LANGUAGE, "en"),
-  [ConfigTokenEnum.APP_TITLE]: env(ConfigTokenEnum.APP_TITLE, "NestApplication"),
-  [ConfigTokenEnum.APP_ID]: env(ConfigTokenEnum.APP_ID),
+  [CONFIG_TOKEN_ENUM.IS_PROD]: env("NODE_ENV", "development") === "production",
+  [CONFIG_TOKEN_ENUM.IS_DEV]: env("NODE_ENV", "development") !== "production",
+  [CONFIG_TOKEN_ENUM.IS_HTTPS]: env("SSL_CERTIFICATE") && env("SSL_CERTIFICATE_KEY") ? true : false,
+  [CONFIG_TOKEN_ENUM.NODE_ENV]: env("NODE_ENV", "development"),
+  [CONFIG_TOKEN_ENUM.PORT]: envNumber("PORT", 5000),
+  [CONFIG_TOKEN_ENUM.API_PREFIX]: env("API_PREFIX", "/api"),
+  [CONFIG_TOKEN_ENUM.COOKIE_DOMAIN]: env(CONFIG_TOKEN_ENUM.COOKIE_DOMAIN, "localhost"),
+  [CONFIG_TOKEN_ENUM.COOKIE_LANG_KEY]: env(CONFIG_TOKEN_ENUM.COOKIE_LANG_KEY, "__lang"),
+  [CONFIG_TOKEN_ENUM.DEFAULT_LANGUAGE]: env(CONFIG_TOKEN_ENUM.DEFAULT_LANGUAGE, "en"),
+  [CONFIG_TOKEN_ENUM.APP_TITLE]: env(CONFIG_TOKEN_ENUM.APP_TITLE, "NestApplication"),
+  [CONFIG_TOKEN_ENUM.APP_ID]: env(CONFIG_TOKEN_ENUM.APP_ID),
   // TOKEN
-  [ConfigTokenEnum.TOKEN_COOKIE]: env(ConfigTokenEnum.TOKEN_COOKIE, "__ut"),
-  [ConfigTokenEnum.TOKEN_SECRET]: env(ConfigTokenEnum.TOKEN_SECRET),
+  [CONFIG_TOKEN_ENUM.TOKEN_COOKIE]: env(CONFIG_TOKEN_ENUM.TOKEN_COOKIE, "__ut"),
+  [CONFIG_TOKEN_ENUM.TOKEN_SECRET]: env(CONFIG_TOKEN_ENUM.TOKEN_SECRET),
   // 客户端编译目录
-  [ConfigTokenEnum.CLIENT_OUTDIR]: env(ConfigTokenEnum.CLIENT_OUTDIR, "dist/client"),
+  [CONFIG_TOKEN_ENUM.CLIENT_OUTDIR]: env(CONFIG_TOKEN_ENUM.CLIENT_OUTDIR, "dist/client"),
   // 忽略签名
-  [ConfigTokenEnum.SIGNATURE_IGNORE]: envBoolean(ConfigTokenEnum.SIGNATURE_IGNORE, false),
+  [CONFIG_TOKEN_ENUM.SIGNATURE_IGNORE]: envBoolean(CONFIG_TOKEN_ENUM.SIGNATURE_IGNORE, false),
   // TTL
-  [ConfigTokenEnum.TTL_TIME]: envNumber(ConfigTokenEnum.TTL_TIME, 1000),
-  [ConfigTokenEnum.TTL_LIMIT]: envNumber(ConfigTokenEnum.TTL_LIMIT, 1000 * 30),
+  [CONFIG_TOKEN_ENUM.TTL_TIME]: envNumber(CONFIG_TOKEN_ENUM.TTL_TIME, 1000),
+  [CONFIG_TOKEN_ENUM.TTL_LIMIT]: envNumber(CONFIG_TOKEN_ENUM.TTL_LIMIT, 1000 * 30),
   // hmr端口
-  [ConfigTokenEnum.HMR_PORT]: envNumber(ConfigTokenEnum.HMR_PORT, 12071),
+  [CONFIG_TOKEN_ENUM.HMR_PORT]: envNumber(CONFIG_TOKEN_ENUM.HMR_PORT, 12071),
   // 证书
-  [ConfigTokenEnum.SSL_CERTIFICATE]: env(ConfigTokenEnum.SSL_CERTIFICATE),
-  [ConfigTokenEnum.SSL_CERTIFICATE_KEY]: env(ConfigTokenEnum.SSL_CERTIFICATE_KEY),
+  [CONFIG_TOKEN_ENUM.SSL_CERTIFICATE]: env(CONFIG_TOKEN_ENUM.SSL_CERTIFICATE),
+  [CONFIG_TOKEN_ENUM.SSL_CERTIFICATE_KEY]: env(CONFIG_TOKEN_ENUM.SSL_CERTIFICATE_KEY),
   // 是否使用数据库
-  [ConfigTokenEnum.DB_ENABLE]: !!env("DB_HOST")?.length,
+  [CONFIG_TOKEN_ENUM.DB_ENABLE]: !!env("DB_HOST")?.length,
+  // 用户配置,是否已经初始化root用户了
+  [CONFIG_TOKEN_ENUM.HAVE_ROOT]: false,
 };
 
-export const AppConfig = registerAs(ConfigDomainEnum.APP_CONFIG, () => APP_CONFIG);
+/** 程序启动时检测root用户是否已经初始化 */
+export async function toggleSystemInitStatus(rootText?: string) {
+  const rootUserPath = resolve(cwd(), "./.db/root");
+
+  if (rootText) {
+    await writeFile(rootUserPath, rootText, "utf-8");
+  }
+
+  const hasRoot = await existsSync(rootUserPath);
+
+  if (!hasRoot) {
+    return (APP_CONFIG[CONFIG_TOKEN_ENUM.HAVE_ROOT] = false);
+  }
+
+  return (APP_CONFIG[CONFIG_TOKEN_ENUM.HAVE_ROOT] = true);
+}
+
+export const AppConfig = registerAs(CONFIG_DOMAIN_ENUM.APP_CONFIG, () => APP_CONFIG);
 
 export type IAppConfig = ConfigType<typeof AppConfig>;

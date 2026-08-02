@@ -2,6 +2,7 @@ import {
   BellOutlined,
   FullscreenExitOutlined,
   FullscreenOutlined,
+  GlobalOutlined,
   KeyOutlined,
   LogoutOutlined,
   UserOutlined,
@@ -61,6 +62,10 @@ const LayoutHeader = defineComponent({
       router.push({ name: ROUTE_NAME.userPersonal });
     }
 
+    function goWebsite() {
+      window.open(router.resolve({ name: ROUTE_NAME.clientHome }).fullPath, "_blank");
+    }
+
     return () => (
       <Layout.Header
         prefixCls={wrapCls}
@@ -77,6 +82,13 @@ const LayoutHeader = defineComponent({
 
           {/* 右上角菜单 */}
           <ul class={`fx ${ns.e("action")}`}>
+            <li
+              class={ns.e("action__item")}
+              onClick={() => goWebsite()}
+            >
+              <GlobalOutlined />
+            </li>
+
             {/* 消息 */}
             <li class={ns.e("action__item")}>
               <Badge

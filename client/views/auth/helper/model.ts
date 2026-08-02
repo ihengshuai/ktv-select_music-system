@@ -1,4 +1,3 @@
-// @ts-ignore
 import md5 from "md5";
 
 import { IFormModel } from "@/typings/common/form";
@@ -12,11 +11,11 @@ export function createUserAuthModel() {
     },
     password: {
       value: null,
-      transform: v => (v && md5(v)) || null,
+      transform: v => v && md5(v),
     },
     code: {
       value: null,
-      transform: v => (v && md5(v.toLowerCase())) || null,
+      transform: v => v && md5(v.toLowerCase()),
     },
   };
 

@@ -1,0 +1,74 @@
+.client-layout {
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  color: #fff;
+  background: #000;
+}
+
+*,
+::before,
+::after {
+  box-sizing: border-box;
+}
+
+.border-amber-600\/40 {
+  border-color: color-mix(in srgb, oklch(66.6% 0.179 58.318deg) 40%, transparent);
+}
+
+.border-amber-500\/30 {
+  @supports (color: color-mix(in lab, red, red)) {
+    border-color: color-mix(in oklab, var(--color-amber-500) 30%, transparent);
+  }
+
+  border-color: color-mix(in srgb, oklch(76.9% 0.188 70.08deg) 30%, transparent);
+}
+
+.client-search {
+  display: block;
+  width: 100%;
+  margin: 0 120px;
+  overflow-y: auto;
+
+  &-input {
+    display: block;
+    width: 100%;
+    max-width: 700px;
+    height: 60px;
+    margin: 40px auto 0;
+    font-size: 22px;
+    line-height: 46px;
+  }
+
+  &__content {
+    display: block;
+    width: 100%;
+    max-width: 940px;
+    padding-top: 60px;
+    margin: 0 auto;
+  }
+
+  &__list {
+    padding: 0;
+    list-style: none;
+
+    &-item {
+      display: flex;
+      margin: 12px 0;
+      font-size: 18px;
+      line-height: 34px;
+    }
+
+    &-title {
+      flex: 1;
+    }
+
+    &-num {
+      margin-right: 12px;
+      font-size: 24px;
+      font-weight: 700;
+      color: orange;
+      vertical-align: bottom;
+    }
+  }
+}

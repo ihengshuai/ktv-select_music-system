@@ -6,7 +6,10 @@ import { Request } from "express";
 import { IConfig } from "@/config";
 import type { IToken } from "@/typings/application";
 
-/** 尝试获取token */
+/**
+ * 尝试获取token
+ * @description 主要服务于不需要鉴权接口场景
+ */
 @Injectable()
 export class TryTakeTokenInterceptor implements NestInterceptor {
   constructor(private readonly jwtService: JwtService, private readonly config: ConfigService<IConfig>) {}
@@ -15,6 +18,8 @@ export class TryTakeTokenInterceptor implements NestInterceptor {
     const request = context.switchToHttp();
     const req = request.getRequest<Request>();
 
+    if (!!req.__token__) return next.handle();
+
     const TOKEN_COOKIE = this.config.get<string>("APP_CONFIG.TOKEN_COOKIE");
 
     const token = req.cookies[TOKEN_COOKIE];
@@ -22,12 +27,11 @@ export class TryTakeTokenInterceptor implements NestInterceptor {
     if (!token) return next.handle();
 
     try {
-      const jwtToken: IToken = await this.jwtService.verifyAsync(token);
+      const jwtToken = await this.jwtService.verifyAsync<IToken>(token);
 
       if (+new Date() - jwtToken.expire > 1000 * 60 * 5) {
         // ...
       } else {
-        // @ts-ignore
         req.__token__ = jwtToken;
       }
     } finally {

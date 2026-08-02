@@ -1,4 +1,12 @@
-import { AppstoreOutlined, FormOutlined, LinkOutlined, TableOutlined, UserOutlined } from "@ant-design/icons-vue";
+import {
+  AppstoreAddOutlined,
+  FileSearchOutlined,
+  MoneyCollectOutlined,
+  ReadOutlined,
+  SlidersOutlined,
+  TagsOutlined,
+  TeamOutlined,
+} from "@ant-design/icons-vue";
 import { Menu } from "ant-design-vue";
 import { Key } from "ant-design-vue/es/_util/type";
 import { MenuInfo } from "ant-design-vue/es/menu/src/interface";
@@ -37,91 +45,97 @@ const LayoutMenu = defineComponent({
     const menus = ref<IMenuItem[]>([
       {
         key: ROUTE_NAME.dashboard,
-        icon: () => <AppstoreOutlined />,
+        icon: () => <SlidersOutlined />,
         title: "menu.dashboard",
         children: [
           {
-            key: ROUTE_NAME.welcome,
-            title: "menu.welcome",
-            target: WINDOW_OPEN_TYPE.NEW_TAB,
+            key: ROUTE_NAME.dashboardMusic,
+            title: "menu.dashboard-music",
           },
           {
-            key: ROUTE_NAME.analysis,
-            title: "menu.analysis",
+            key: ROUTE_NAME.dashboardIncome,
+            title: "menu.dashboard-income",
           },
         ],
       },
       {
         key: ROUTE_NAME.userManage,
-        icon: () => <UserOutlined />,
+        icon: () => <TeamOutlined />,
         title: "menu.user-manage",
         validator: () => [USER_ROLE.SUPER, USER_ROLE.ADMIN].includes(userStore.userState.user?.level!),
       },
       {
-        key: ROUTE_NAME.table,
-        icon: () => <TableOutlined />,
-        title: "menu.table",
+        key: ROUTE_NAME.staticManager,
+        icon: () => <FileSearchOutlined />,
+        title: "menu.static-manager",
+        validator: () => [USER_ROLE.SUPER, USER_ROLE.ADMIN].includes(userStore.userState.user?.level!),
+      },
+      {
+        key: ROUTE_NAME.enumCode,
+        icon: () => <TagsOutlined />,
+        title: "menu.enum-code",
+        validator: () => [USER_ROLE.SUPER, USER_ROLE.ADMIN].includes(userStore.userState.user?.level!),
+      },
+      {
+        key: ROUTE_NAME.music,
+        icon: () => <AppstoreAddOutlined />,
+        title: "menu.music-manager",
+        validator: () => [USER_ROLE.SUPER, USER_ROLE.ADMIN].includes(userStore.userState.user?.level!),
         children: [
           {
-            key: ROUTE_NAME.tableReadme,
-            title: "menu.readme",
+            key: ROUTE_NAME.musicList,
+            title: "menu.music-list",
           },
           {
-            key: ROUTE_NAME.tableBasic,
-            title: "menu.origin-table",
+            key: ROUTE_NAME.musicLyrics,
+            title: "menu.music-lyrics",
           },
           {
-            key: ROUTE_NAME.tableRouteMapping,
-            title: "menu.table-mapping",
+            key: ROUTE_NAME.musicSinger,
+            title: "menu.music-singer",
           },
           {
-            key: ROUTE_NAME.tableAdvance,
-            title: "menu.table-advance",
-            children: [
-              {
-                key: ROUTE_NAME.tableForm,
-                title: "menu.table-form",
-              },
-              {
-                key: ROUTE_NAME.tableOperate,
-                title: "menu.table-operation",
-              },
-              {
-                key: ROUTE_NAME.tableComplex,
-                title: "menu.table-complex",
-              },
-            ],
+            key: ROUTE_NAME.musicStyle,
+            title: "menu.music-style",
+          },
+          {
+            key: ROUTE_NAME.musicTag,
+            title: "menu.music-tag",
+          },
+          {
+            key: ROUTE_NAME.musicRegion,
+            title: "menu.music-region",
+          },
+          {
+            key: ROUTE_NAME.musicLanguage,
+            title: "menu.music-language",
           },
         ],
       },
+
       {
-        key: ROUTE_NAME.form,
-        icon: () => <FormOutlined />,
-        title: "menu.form",
+        key: ROUTE_NAME.order,
+        icon: () => <MoneyCollectOutlined />,
+        title: "menu.order",
+        validator: () => [USER_ROLE.SUPER, USER_ROLE.ADMIN].includes(userStore.userState.user?.level!),
         children: [
           {
-            key: ROUTE_NAME.formBasic,
-            title: "menu.form-basic",
+            key: ROUTE_NAME.orderList,
+            title: "menu.order-list",
+          },
+          {
+            key: ROUTE_NAME.orderPay,
+            title: "menu.order-pay",
           },
         ],
       },
+
       {
-        key: ROUTE_NAME.userManage,
-        icon: () => <UserOutlined />,
-        title: "menu.user-manage",
-        validator: () => userStore.userState.user?.level === USER_ROLE.ADMIN,
-      },
-      {
-        key: "extra-link",
-        icon: () => <LinkOutlined />,
-        title: "menu.extra-link",
+        key: "ktv-docs",
+        icon: () => <ReadOutlined />,
+        title: "menu.readme",
         target: WINDOW_OPEN_TYPE.NEW_TAB,
-        link: "https://blog.usword.cn?from=vue3-admin",
-      },
-      {
-        key: "disabled-link",
-        title: "禁用的",
-        disabled: true,
+        link: "https://blog.usword.cn/article/2019/ktv-system.html?from=vue3-admin",
       },
     ]);
     const menuMap = computed(() => flatDeepArrayKeyToObject(menus.value, "children") || {});

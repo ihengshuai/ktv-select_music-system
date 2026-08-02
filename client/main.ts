@@ -1,12 +1,12 @@
 import { createApp, h } from "vue";
 
-import { setupI18n, setupAppWorker } from "@/helper";
-
 import App from "./App";
-import { appInterceptor } from "./helper/app-interceptor";
+import { setupI18n, setupAppWorker, appInterceptor } from "./helper";
+import { Exception } from "./helper/exception";
 import AppProvider from "./layout/default/application";
 import { setupRouter, setupRouterGuard } from "./router";
 import { setupStore } from "./store";
+
 import "@/style/index.less";
 import "virtual:uno.css";
 
@@ -25,11 +25,15 @@ async function bootstrap() {
 
   setupAppWorker();
 
+  app.config.errorHandler = err => {
+    if (err instanceof Exception) {
+      console.log(`【VueErrorHandler】(${err.name})`, err);
+    } else {
+      console.log(err);
+    }
+  };
+
   app.mount("#app");
 }
 
-try {
-  bootstrap();
-} catch (error) {
-  console.log(error);
-}
+bootstrap().catch(console.log);

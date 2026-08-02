@@ -1,12 +1,10 @@
-import { AxiosError } from "axios";
-
 // import { i18n } from "@/helper";
-import { HttpError } from "@/helper/request/http-error/capture-error";
+import { HttpBusinessExceptionMsg } from "@/helper/request/http-error/capture-error";
 
-export class TestCaptureError extends HttpError {
-  constructor(error: AxiosError) {
-    super(error.code!, error.message);
+export class TestCaptureHttpExceptionMsg extends HttpBusinessExceptionMsg {
+  showExceptionMsg = true;
 
+  get msg(): string | null {
     const msg: Record<string, string> = {
       400: "你小子，你填的参数有误啊",
       401: "你小子，你没有权限啊",
@@ -18,6 +16,6 @@ export class TestCaptureError extends HttpError {
       // 1000: i18n.global.t("error.1000")
     };
 
-    this.message = msg[error.code!];
+    return msg[this.code];
   }
 }

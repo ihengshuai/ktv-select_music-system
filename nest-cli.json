@@ -5,6 +5,10 @@
   "compilerOptions": {
     "deleteOutDir": true,
     "tsConfigPath": "./tsconfig.build.json",
-    "builder":"swc"
+    "builder":"swc",
+    "assets": [
+      { "include": "i18n/**/*", "watchAssets": false },
+      { "include": "views/**/*", "watchAssets": true }
+    ]
   }
 }

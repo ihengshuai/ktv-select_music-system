@@ -44,24 +44,34 @@ export class UserService {
 
     const avatar = await queryBuilder
       .leftJoin(StaticEntity, "s", "u.avatar = s.id")
-      .select(["s.url as avatarURL", "s.id as avatarId"])
+      .select(["s.url as avatarURL", "s.id as avatarId", "s.location as location"])
       .where("username = :username", { username })
       .getRawOne();
 
     res.avatar = avatar?.avatarId || null;
     // @ts-ignore
-    res.avatarURL = generateStaticURL(avatar?.avatarURL);
+    res.avatarURL = generateStaticURL(avatar?.avatarURL, avatar?.location);
 
     return res;
   }
 
   /** 查询用户列表 */
   async findAllUsers(query: QueryUserDTO, pagination: PaginationDTO) {
-    const keywords = `%${query.keywords}%`;
+    const builder = this.userRepository.createQueryBuilder("userRepository");
 
-    const [items, total] = await this.userRepository
-      .createQueryBuilder("userRepository")
-      .where("username LIKE :keywords or nickname LIKE :keywords", { keywords })
+    if (query.keywords) {
+      builder.andWhere("username LIKE :keywords or nickname LIKE :keywords", { keywords: `%${query.keywords}%` });
+    }
+
+    if (query.level) {
+      builder.andWhere("level = :level", { level: query.level });
+    }
+
+    if (query.status) {
+      builder.andWhere("status = :status", { status: query.status });
+    }
+
+    const [items, total] = await builder
       .skip((pagination.page - 1) * pagination.size)
       .take(pagination.size)
       .getManyAndCount();

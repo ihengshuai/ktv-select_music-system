@@ -27,9 +27,7 @@ export function createEntityFromData(Entity: IConstructor, value: IDict, prop?: 
 
   const data = prop ? val[prop] : val;
 
-  const entity = createEntity(Entity, data);
-
-  return entity;
+  return createEntity(Entity, data);
 }
 
 /**

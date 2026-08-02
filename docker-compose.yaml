@@ -2,12 +2,12 @@
 
 version: '3.3'
 
-name: ktv-system-v2
+name: ktv-system-db
 
 services:
-  mysql:
+  mysql: # mongodb 用来存储翻译表
     image: mysql:latest
-    container_name: ktv-system-v2_mysql
+    container_name: ktv-system-db_mysql
     environment:
       MYSQL_ROOT_PASSWORD: 123456 # 默认root密码
       TZ: Asia/Shanghai
@@ -17,9 +17,7 @@ services:
     volumes:
       - ./.db/mysql:/var/lib/mysql
     networks:
-      - ktv-system-v2_network
-
-  # 根据Dockerfile创建容器
+      - ktv-system-db_network
 
 networks:
-  ktv-system-v2_network:
+  ktv-system-db_network:

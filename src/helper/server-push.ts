@@ -11,13 +11,10 @@ const { CLIENT_OUTDIR, COOKIE_LANG_KEY, DEFAULT_LANGUAGE, COOKIE_DOMAIN } = APP_
 export async function useServerPush(req: Request, res: Response, next: Function) {
   const manifest = readFileSync(resolve(cwd(), `${CLIENT_OUTDIR}/.vite/manifest.json`), "utf-8");
 
-  if (!/(^\/api)|(\.(js|css|png|jpg)$)/i.test(req.url)) {
-    // TODO: 这里只是简单的将html页面默认的资源进行推送
-    // 若需要根据路由推送，客户端需要将chunkName对应没有路由文件和路由，目前还没有相关插件
+  if (!/(^\/api)|(\.(js|css|png|jpg)$)/i.test(req.url) && !/^\/page/i.test(req.url) /* 忽略掉 ejs 页面 */) {
     const beautyManifest = JSON.parse(manifest);
     const htmlManifest = beautyManifest["index.html"];
     if (htmlManifest) {
-      // 没有cookie根据浏览器进行判断需要推送的语言包
       const agentLanguages = req.header("Accept-Language") || "";
       const agentLanguage = agentLanguages.split(",")?.[0]?.replace(/(_|-).*/, "");
       const lang = req.cookies[COOKIE_LANG_KEY] || agentLanguage || DEFAULT_LANGUAGE;

@@ -2,25 +2,30 @@ import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from "@nes
 import { Reflector } from "@nestjs/core";
 import { Observable, map } from "rxjs";
 
-import { DecoratorSymbol } from "@/constants";
+import { DECORATOR_SYMBOL } from "@/consts";
+import { BaseResponseVO } from "@/vo/base-response.vo";
 
 @Injectable()
 export class BeautyResponseInterceptor implements NestInterceptor {
   constructor(private readonly reflector: Reflector) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    const isOriginalResponse = this.reflector.get(
-      DecoratorSymbol.ORIGINAL_RESPONSE,
+    const isWrapperResponse = this.reflector.get(
+      DECORATOR_SYMBOL.WRAPPER_RESPONSE,
       context.getHandler() ?? context.getClass()
     );
 
-    if (isOriginalResponse) return next.handle();
+    if (isWrapperResponse === false) return next.handle();
 
     return next.handle().pipe(
-      map(data => ({
-        code: 200,
-        data,
-      }))
+      map(data => {
+        if (data instanceof BaseResponseVO) return data;
+
+        return {
+          code: 200,
+          data,
+        };
+      })
     );
   }
 }

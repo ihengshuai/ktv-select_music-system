@@ -1,4 +1,5 @@
 import { USER_ROLE, USER_STATUS } from "@/constants/user";
+import { IBaseQuery } from "../common/common";
 
 /**
  * 用户登录或注册
@@ -12,7 +13,10 @@ export interface IUserLoginOrSignUpDTO {
 /**
  * 用户搜索
  */
-export interface IUserListFilter extends ICommonQuery {}
+export interface IUserListFilter extends IBaseQuery {
+  level?: USER_ROLE;
+  status?: USER_STATUS;
+}
 
 /** 用户信息 */
 export interface IUserInfo {

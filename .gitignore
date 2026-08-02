@@ -32,3 +32,13 @@ pnpm-debug.log*
 !.db/README.md
 
 /logs
+
+# static
+*.mp4
+*.mov
+*.iso
+*.pdf
+/.upload/*
+!/.upload/README.md
+/.db/*
+!/.db/README.md

@@ -4,6 +4,7 @@ import { IDict, IPrimitive } from "./type";
 import { ColumnType } from "ant-design-vue/es/table";
 import { ButtonProps } from "ant-design-vue/es/button";
 import { Ref } from "vue";
+import { JSX } from "vue/jsx-runtime";
 
 /** 排序 */
 export interface IListOrder {
@@ -98,7 +99,7 @@ export interface ITableFilterItem<T = any, R = any> {
 /**
  * 表格操作项
  */
-export interface IOperation<T = IDict<any>> {
+export interface IOperation<T = Record<string, unknown>> {
   /**
    * 操作类型
    */
@@ -106,7 +107,7 @@ export interface IOperation<T = IDict<any>> {
   /**
    * 操作值
    */
-  value?: string | ((payload: ITableBodyCell<T>) => any);
+  value?: string | ((payload: ITableBodyCell<T>) => any) | JSX.Element;
   /**
    * 点击后响应逻辑
    */
@@ -130,7 +131,7 @@ export interface IOperation<T = IDict<any>> {
 }
 
 /** tablebody scope slots props  */
-export interface ITableBodyCell<T = IDict<any>> {
+export interface ITableBodyCell<T = IDict<unknown>> {
   /** 单元格内容 */
   text: any;
   /** 单元格值 */

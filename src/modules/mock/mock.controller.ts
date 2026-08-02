@@ -2,16 +2,15 @@ import { Controller, Get, Req } from "@nestjs/common";
 import { Body, Post, Query, UseGuards } from "@nestjs/common/decorators";
 import { ForbiddenException } from "@nestjs/common/exceptions";
 import { ConfigService } from "@nestjs/config";
-import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import type { Request } from "express";
 
-import { AuthenticationGuard } from "@/common/guard/authentication-controller.guard";
-import { GlobalConfiguration } from "@/config";
+import { AuthenticationBaseGuard } from "@/common/guard/authentication-base.guard";
+import { IConfig } from "@/config";
 import { OrderDTO } from "@/dto/base-order.dto";
 import { PaginationDTO } from "@/dto/base-pagination.dto";
 import { sleep } from "@/utils";
 
-import { UsersQueryDto, UsersResponseDto } from "./dto/user.dto";
+import { UsersQueryDto } from "./dto/user.dto";
 
 const userList = [
   { id: 0, name: "曹操", sex: "remale", age: 10, hobbies: [1, 3], createTime: "2000-10-12" },
@@ -39,10 +38,9 @@ const userList = [
 ];
 
 @Controller("/mock")
-@ApiTags("MockUser")
-@UseGuards(AuthenticationGuard)
+@UseGuards(AuthenticationBaseGuard)
 export class MockController {
-  constructor(readonly configService: ConfigService<ReturnType<typeof GlobalConfiguration>>) {}
+  constructor(readonly configService: ConfigService<IConfig>) {}
 
   @Get("/user/:id")
   async getUser() {
@@ -74,7 +72,6 @@ export class MockController {
   }
 
   @Get("/users")
-  @ApiResponse({ type: UsersResponseDto })
   async getUsers(
     @Req() req: Request,
     @Query() filter: UsersQueryDto,
@@ -104,8 +101,7 @@ export class MockController {
     await sleep(1000);
 
     if (req.query.testCode) {
-      throw new ForbiddenException({ error: "权限不够,禁止访问" });
-      // throw new HttpException("权限不够,禁止访问", HttpStatus.FORBIDDEN);
+      throw new ForbiddenException("权限不够,禁止访问");
     }
 
     return {

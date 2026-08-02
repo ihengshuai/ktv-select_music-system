@@ -2,7 +2,6 @@ import { Layout, Modal, Watermark, theme } from "ant-design-vue";
 import { storeToRefs } from "pinia";
 import { defineComponent, watch } from "vue";
 
-import { useConfig } from "@/config";
 import { useAppStore } from "@/store";
 import { useNameSpace } from "@/util";
 
@@ -17,7 +16,6 @@ const cls = useNameSpace("layout-wrap");
 const _Layout = defineComponent({
   name: "Layout",
   setup() {
-    const appConfig = useConfig();
     const { useToken } = theme;
     const { token } = useToken();
     const appStore = useAppStore();
@@ -37,7 +35,7 @@ const _Layout = defineComponent({
     });
 
     return () => (
-      <Watermark content={appConfig.APP_TITLE}>
+      <Watermark content={"赋码空间"}>
         <Layout
           hasSider
           class={cls.b()}

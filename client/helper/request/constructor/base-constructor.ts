@@ -2,7 +2,7 @@ import Axios, { AxiosInstance, AxiosRequestConfig, Method } from "axios";
 import * as qs from "qs";
 
 import { useConfig } from "@/config";
-import { HTTP_DATA_TYPE } from "@/constants/http";
+import { HTTP_DATA_TYPE } from "@/constants/http.const";
 import { IHttpRequestConfig } from "@/typings/common/http";
 import { IDict } from "@/typings/common/type";
 
